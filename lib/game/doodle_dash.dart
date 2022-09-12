@@ -1,13 +1,14 @@
 import 'package:flame/game.dart';
+import 'package:flame/input.dart';
 import 'package:flutter/material.dart';
 
 import 'sprites/sprites.dart';
 import './world.dart';
 
-class DoodleDash extends FlameGame {
+class DoodleDash extends FlameGame with HasKeyboardHandlerComponents {
   DoodleDash({super.children});
 
-  World _world = World();
+  final World _world = World();
 
   Future<void> onLoad() async {
     await add(_world);
