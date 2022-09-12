@@ -12,7 +12,6 @@ class Player extends SpriteGroupComponent<DashDirection>
 
   @override
   Future<void> onLoad() async {
-    print('Player.onLoad');
     super.onLoad();
     final leftDash = await gameRef.loadSprite('game/left_dash.png');
     final rightDash = await gameRef.loadSprite('game/right_dash.png');
@@ -31,14 +30,11 @@ class Player extends SpriteGroupComponent<DashDirection>
 
   @override
   bool onKeyEvent(RawKeyEvent event, Set<LogicalKeyboardKey> keysPressed) {
-    print('Player.onKeyPressed');
     if (keysPressed.contains(LogicalKeyboardKey.arrowLeft)) {
-      print('KEY LEFT!');
       current = DashDirection.left;
     }
 
     if (keysPressed.contains(LogicalKeyboardKey.arrowRight)) {
-      print('KEY LEFT!');
       current = DashDirection.right;
     }
 
