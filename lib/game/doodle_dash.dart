@@ -2,14 +2,15 @@ import 'package:flame/game.dart';
 import 'package:flame/input.dart';
 import 'package:flutter/material.dart';
 
-import 'sprites/sprites.dart';
 import './world.dart';
+import 'sprites/sprites.dart';
 
 class DoodleDash extends FlameGame with HasKeyboardHandlerComponents {
   DoodleDash({super.children});
 
   final World _world = World();
 
+  @override
   Future<void> onLoad() async {
     await add(_world);
 
@@ -19,10 +20,10 @@ class DoodleDash extends FlameGame with HasKeyboardHandlerComponents {
     await add(dash);
   }
 
-  @override
-  void update(double dt) {
-    super.update(dt);
-  }
+  // @override
+  // void update(double dt) {
+  //   super.update(dt);
+  // }
 
   @override
   Color backgroundColor() {
