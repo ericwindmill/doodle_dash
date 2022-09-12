@@ -7,12 +7,17 @@ enum DashDirection { left, right }
 
 class Player extends SpriteGroupComponent<DashDirection>
     with HasGameRef<DoodleDash>, KeyboardHandler {
-  Player() : super(size: Vector2.all(100));
-  int count = 0;
+  Player({super.position}) : super(size: Vector2.all(100));
+
+  final Vector2 _velocity = Vector2.zero();
+  // used to calculate if the user is moving Dash left (-1) or right (1)
+  int _hAxisInput = 0;
+  // used to calculate the hosizontal movement speed
+  final double _moveSpeed = 250;
 
   @override
   Future<void> onLoad() async {
-    super.onLoad();
+    await super.onLoad();
     final leftDash = await gameRef.loadSprite('game/left_dash.png');
     final rightDash = await gameRef.loadSprite('game/right_dash.png');
 
@@ -26,16 +31,24 @@ class Player extends SpriteGroupComponent<DashDirection>
   }
 
   @override
-  void update(double dt) {}
+  void update(double dt) {
+    _velocity.x = _hAxisInput * _moveSpeed;
+    position += _velocity * dt;
+    super.update(dt);
+  }
 
   @override
   bool onKeyEvent(RawKeyEvent event, Set<LogicalKeyboardKey> keysPressed) {
+    _hAxisInput = 0;
+
     if (keysPressed.contains(LogicalKeyboardKey.arrowLeft)) {
       current = DashDirection.left;
+      _hAxisInput += -1;
     }
 
     if (keysPressed.contains(LogicalKeyboardKey.arrowRight)) {
       current = DashDirection.right;
+      _hAxisInput += 1;
     }
 
     return true;

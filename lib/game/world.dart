@@ -1,6 +1,5 @@
 import 'package:flame/components.dart';
 import 'package:flame/parallax.dart';
-import 'package:flutter/painting.dart';
 
 import './doodle_dash.dart';
 
