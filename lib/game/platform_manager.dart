@@ -59,9 +59,9 @@ class PlatformManager extends Component with HasGameRef<DoodleDash> {
     final screenBottom = gameRef.dash.position.y + (gameRef.size.x / 2);
 
     if (topOfPlatform > screenBottom) {
-      print('OFFSCREEN');
+      // print('OFFSCREEN');
     } else {
-      print('ONSCREEN');
+      // print('ONSCREEN');
     }
     super.update(dt);
   }

@@ -13,23 +13,27 @@ class DoodleDash extends FlameGame
   final World _world = World();
   final PlatformManager platformManager = PlatformManager(
     maxVerticalDistanceToNextPlatform:
-        350, // todo: refactor to use a variable for jump speed and this
+        350, // todo: refactor to use a variable called jumpSpeed so this and Dash's jump are in sync
   );
   Player dash = Player();
 
-  bool _cameraFixedWhileDashFalling = false;
   double currentWorldBoundBottom = 100000;
 
   @override
   Future<void> onLoad() async {
     await add(_world);
-
+    // Dash starts off screen ("below" camera)
     dash.position = Vector2(
       (_world.size.x - dash.size.x) / 2,
       ((_world.size.y + 100) + dash.size.y),
     );
     await add(dash);
-    add(platformManager);
+    await add(platformManager);
+
+    // Setting the World Bounds for the camera will allow the camera to "move up"
+    // but stay fixed horizontally, allowing Dash to go out of camera on one side,
+    // and re-appear on the other side.
+    // TODO: the "-10000" needs to be handled dynamically, or the camera will never move higher than -10000 pixels
     camera.worldBounds = Rect.fromLTRB(
       0,
       -10000, // todo
@@ -37,47 +41,45 @@ class DoodleDash extends FlameGame
       10000,
     );
 
+    // Launches Dash into the screen when the game starts
     dash.megaJump();
   }
 
+  int i = 0;
+
   @override
-  // ignore: unnecessary_overrides
   void update(double dt) {
     super.update(dt);
 
-    /// NOTE FOR FUTURE ME:
-    /// I think what I need to do is have the camera follow dash if she's in the top half
-    /// of the screen and moving up, but the camera should be fixed if shes in the bottom half
-    /// of the screen OR moving down while in the top half.
-    ///
+    // when dash is moving down, set the bottom bounds of the camera to the current view
+    if (dash.isMovingDown) {
+      camera.worldBounds = Rect.fromLTRB(
+        0,
+        camera.position.y + 10000, // todo
+        camera.gameSize.x,
+        camera.position.y + _world.size.y,
+      );
+    }
 
     var isInTopHalfOfScreen = dash.position.y <= (_world.size.y / 2);
-
-    // when dash first reaches the center Y after launching onto screen,
-    // fix camera on dash
-    // if (dash.position.y <= (_world.size.y / 2) && !_cameraFixedForGame) {
-    //   camera.followComponent(dash);
-    //   _cameraFixedForGame = true;
-    // }
-
-    // the lower bound of the world should always be the current screen.position.y
-    // so it must increase as dash moves up.
-    // if (!dash.isMovingDown) {
-    //   currentWorldBoundBottom = dash.center.y + (_world.size.y / 2);
-    //   camera.worldBounds = Rect.fromLTRB(
-    //     0,
-    //     -10000, // todo
-    //     camera.gameSize.x,
-    //     currentWorldBoundBottom,
-    //   );
-    // } else {
-    //   camera.resetMovement();
-    //   _cameraFixedForGame = false;
-    // }
+    if (!dash.isMovingDown && isInTopHalfOfScreen) {
+      camera.followComponent(dash);
+      // Here, we really only care about the "T" porition of the LTRB.
+      // ensure that the world is always much taller than Dash will reach
+      // we will want to consider not doing this on every frame tick if it
+      // becomes janky
+      camera.worldBounds = Rect.fromLTRB(
+        0,
+        camera.position.y + 10000, // todo
+        camera.gameSize.x,
+        camera.position.y + _world.size.y,
+      );
+    }
 
     // What would be better is to have the camera stop following Dash if this is true
     // then, let Dash fall off screen, and when shes completely off, call onLose.
-    if (dash.position.y > platformManager.platforms.first.y + 2000) {
+    if (dash.position.y >
+        camera.position.y + _world.size.y + dash.size.y + 100) {
       onLose();
     }
   }
