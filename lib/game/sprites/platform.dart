@@ -23,17 +23,13 @@ class Platform extends SpriteComponent
   }
 
   @override
+  // ignore: unnecessary_overrides
   void update(double dt) {
-    // position += Vector2(0, 1) * 200 * dt;
-
-    // if (position.y > gameRef.size.y + 100) {
-    //   removeFromParent();
-    // }
-
     super.update(dt);
   }
 
   @override
+  // ignore: unnecessary_overrides
   void remove(Component component) {
     super.remove(component);
   }

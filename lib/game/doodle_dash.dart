@@ -33,7 +33,6 @@ class DoodleDash extends FlameGame
     // Setting the World Bounds for the camera will allow the camera to "move up"
     // but stay fixed horizontally, allowing Dash to go out of camera on one side,
     // and re-appear on the other side.
-    // TODO: the "-10000" needs to be handled dynamically, or the camera will never move higher than -10000 pixels
     camera.worldBounds = Rect.fromLTRB(
       0,
       -10000, // todo
@@ -45,8 +44,6 @@ class DoodleDash extends FlameGame
     dash.megaJump();
   }
 
-  int i = 0;
-
   @override
   void update(double dt) {
     super.update(dt);
@@ -55,7 +52,7 @@ class DoodleDash extends FlameGame
     if (dash.isMovingDown) {
       camera.worldBounds = Rect.fromLTRB(
         0,
-        camera.position.y + 10000, // todo
+        camera.position.y - 10000, // todo
         camera.gameSize.x,
         camera.position.y + _world.size.y,
       );
@@ -70,7 +67,7 @@ class DoodleDash extends FlameGame
       // becomes janky
       camera.worldBounds = Rect.fromLTRB(
         0,
-        camera.position.y + 10000, // todo
+        camera.position.y - 10000, // todo
         camera.gameSize.x,
         camera.position.y + _world.size.y,
       );
@@ -91,7 +88,6 @@ class DoodleDash extends FlameGame
 
   // Todo: Detect when Dash has fallen bellow the bottom platform
   void onLose() {
-    print('loser!');
     pauseEngine();
   }
 }

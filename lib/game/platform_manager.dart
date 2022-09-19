@@ -32,7 +32,7 @@ class PlatformManager extends Component with HasGameRef<DoodleDash> {
         random.nextInt(gameRef.size.x.floor()).toDouble(),
         currentY,
       ));
-    }, growable: false);
+    });
 
     for (var platform in platforms) {
       add(platform);
@@ -53,15 +53,37 @@ class PlatformManager extends Component with HasGameRef<DoodleDash> {
     return prevY - distanceFromPrevY;
   }
 
+  double _generateNextY() {
+    final currentHighestPlatformY = platforms.last.center.y;
+    final distanceToNextY = minVerticalDistanceToNextPlatform.toInt() +
+        random
+            .nextInt((maxVerticalDistanceToNextPlatform -
+                    minVerticalDistanceToNextPlatform)
+                .floor())
+            .toDouble();
+
+    return currentHighestPlatformY - distanceToNextY;
+  }
+
   @override
   void update(double dt) {
-    final topOfPlatform = platforms.first.position.y;
-    final screenBottom = gameRef.dash.position.y + (gameRef.size.x / 2);
+    final topOfLowestPlatform =
+        platforms.first.position.y; // 100 is a slight buffer
+    final screenBottom = gameRef.dash.position.y + (gameRef.size.x / 2) + 100;
 
-    if (topOfPlatform > screenBottom) {
-      // print('OFFSCREEN');
-    } else {
-      // print('ONSCREEN');
+    // When the lowest platform is offscreen, it can be
+    if (topOfLowestPlatform > screenBottom) {
+      var newPlatY = _generateNextY();
+      var newPlatX = random.nextInt(gameRef.size.x.floor()).toDouble();
+      final newPlat = Platform(position: Vector2(newPlatX, newPlatY));
+      add(newPlat);
+
+      // after renderin, add to platforms queue for management
+      platforms.add(newPlat);
+      final lowestPlat = platforms.removeAt(0);
+
+      // remove component from game
+      lowestPlat.removeFromParent();
     }
     super.update(dt);
   }
