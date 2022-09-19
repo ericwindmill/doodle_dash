@@ -48,7 +48,6 @@ class Player extends SpriteGroupComponent<DashDirection>
     _velocity.y += _gravity;
 
     // infinite side boundaries
-    // TODO: tweak numbers to make smooth.
     if (position.x < -50) {
       position.x = gameRef.size.x + size.x + 10;
     }
