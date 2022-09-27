@@ -13,21 +13,25 @@ class DoodleDash extends FlameGame
   final World _world = World();
   final PlatformManager platformManager = PlatformManager(
     maxVerticalDistanceToNextPlatform:
-        350, // todo: refactor to use a variable called jumpSpeed so this and Dash's jump are in sync
+        350, // TODO: (sprint 2) refactor to use a variable called jumpSpeed so this and Dash's jump are in sync, make responsive
   );
   Player dash = Player();
 
-  double currentWorldBoundBottom = 100000;
+  int screenBufferSpace = 100;
 
   @override
   Future<void> onLoad() async {
     await add(_world);
-    // Dash starts off screen ("below" camera)
+    // Set Dash's position, starting off screen ("below" camera)
     dash.position = Vector2(
       (_world.size.x - dash.size.x) / 2,
-      ((_world.size.y + 100) + dash.size.y),
+      ((_world.size.y + screenBufferSpace) + dash.size.y),
     );
+
+    // Add Dash component to the game
     await add(dash);
+
+    // Add the platform manager component to the game
     await add(platformManager);
 
     // Setting the World Bounds for the camera will allow the camera to "move up"
@@ -35,12 +39,13 @@ class DoodleDash extends FlameGame
     // and re-appear on the other side.
     camera.worldBounds = Rect.fromLTRB(
       0,
-      -10000, // todo
+      -_world.size.y, // top of screen is 0, so negative is already off screen
       camera.gameSize.x,
-      10000,
+      _world.size.y +
+          screenBufferSpace, // makes sure bottom bound of game is below bottom of screen
     );
 
-    // Launches Dash into the screen when the game starts
+    // Launches Dash from below the screen into frame when the game starts
     dash.megaJump();
   }
 
@@ -48,11 +53,12 @@ class DoodleDash extends FlameGame
   void update(double dt) {
     super.update(dt);
 
-    // when dash is moving down, set the bottom bounds of the camera to the current view
+    // Camera should only follow Dash when she's moving up, if she's following down
+    // the camera should stay where it is and NOT follow her down.
     if (dash.isMovingDown) {
       camera.worldBounds = Rect.fromLTRB(
         0,
-        camera.position.y - 10000, // todo
+        camera.position.y - screenBufferSpace, // TODO
         camera.gameSize.x,
         camera.position.y + _world.size.y,
       );
@@ -67,16 +73,16 @@ class DoodleDash extends FlameGame
       // becomes janky
       camera.worldBounds = Rect.fromLTRB(
         0,
-        camera.position.y - 10000, // todo
+        camera.position.y - screenBufferSpace, // TODO
         camera.gameSize.x,
         camera.position.y + _world.size.y,
       );
     }
 
-    // What would be better is to have the camera stop following Dash if this is true
-    // then, let Dash fall off screen, and when shes completely off, call onLose.
+    // if Dash falls off screen, game over!
     if (dash.position.y >
-        camera.position.y + _world.size.y + dash.size.y + 100) {
+        camera.position.y + _world.size.y + dash.size.y + screenBufferSpace) {
+      // TODO (sprint 2): find a cleaner way to calculate bottom of screen
       onLose();
     }
   }
@@ -86,8 +92,10 @@ class DoodleDash extends FlameGame
     return const Color.fromARGB(255, 241, 247, 249);
   }
 
-  // Todo: Detect when Dash has fallen bellow the bottom platform
+  // TODO: Detect when Dash has fallen bellow the bottom platform
   void onLose() {
     pauseEngine();
+
+    // TODO: Load Game Over text, restart button
   }
 }

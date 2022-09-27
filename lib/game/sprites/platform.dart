@@ -12,25 +12,15 @@ class Platform extends SpriteComponent
     super.position,
   }) : super(
           size: Vector2.all(50),
-          priority: 2,
+          priority: 2, // Ensures platform is always behind Dash
         );
 
   @override
   Future<void>? onLoad() async {
     await super.onLoad();
     sprite = await gameRef.loadSprite('game/yellow_platform.png');
+
+    // Add collision detection logic
     await add(hitbox);
-  }
-
-  @override
-  // ignore: unnecessary_overrides
-  void update(double dt) {
-    super.update(dt);
-  }
-
-  @override
-  // ignore: unnecessary_overrides
-  void remove(Component component) {
-    super.remove(component);
   }
 }
