@@ -7,7 +7,7 @@ import 'sprites/platform.dart';
 
 class PlatformManager extends Component with HasGameRef<DoodleDash> {
   final Random random = Random();
-  late final List<Platform> platforms;
+  final List<Platform> platforms = [];
   // TODO (sprint 2): This will be dependent on player jump speed and screen width
   final double maxVerticalDistanceToNextPlatform;
 
@@ -24,16 +24,19 @@ class PlatformManager extends Component with HasGameRef<DoodleDash> {
 
     // Generate 10 Platforms at random x, y positions and add to list of platforms
     // to be populated in the game.
-    platforms = List.generate(10, (idx) {
-      if (idx != 0) {
-        currentY = _generateInitialYPositions(currentY);
+    for (var i = 0; i < 9; i++) {
+      if (i != 0) {
+        currentY = _generateNextY();
       }
-      return Platform(
+      platforms.add(
+        Platform(
           position: Vector2(
-        random.nextInt(gameRef.size.x.floor()).toDouble(),
-        currentY,
-      ));
-    });
+            random.nextInt(gameRef.size.x.floor()).toDouble(),
+            currentY,
+          ),
+        ),
+      );
+    }
 
     for (var platform in platforms) {
       add(platform);
@@ -42,22 +45,10 @@ class PlatformManager extends Component with HasGameRef<DoodleDash> {
     super.onMount();
   }
 
-  // TODO (sprint 1): Refactor to combine generateY methods into 1.
-  // Generate a random Y position that is a good distance from
-  // the previous platform
-  double _generateInitialYPositions(double prevY) {
-    var distanceFromPrevY = minVerticalDistanceToNextPlatform.toInt() +
-        random
-            .nextInt((maxVerticalDistanceToNextPlatform -
-                    minVerticalDistanceToNextPlatform)
-                .floor())
-            .toDouble();
-
-    // subtract because moving vertically is going down
-    return prevY - distanceFromPrevY;
-  }
-
-  // TODO: Add documentation for this function
+  // This method determines where the next platform should be placed
+  // It calculates a random distance between the minVerticalDistanceToNextPlatform
+  // and the maxVerticalDistanceToNextPlatform, and returns a Y coordiate that is
+  // that distance above the current highest platform
   double _generateNextY() {
     final currentHighestPlatformY = platforms.last.center.y;
     final distanceToNextY = minVerticalDistanceToNextPlatform.toInt() +
