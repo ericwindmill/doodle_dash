@@ -16,23 +16,17 @@ class GameOverlay extends StatelessWidget {
         children: [
           Positioned(
             top: 30,
-            right: 30,
-            child: ElevatedButton(
-              child: const Icon(Icons.pause),
-              onPressed: () {
-                game.pauseEngine();
-              },
-            ),
+            left: 30,
+            child: Text('Score: ${(game as DoodleDash).score}'),
           ),
           Positioned(
             top: 30,
-            right: 100,
+            right: 30,
             child: ElevatedButton(
-              child: const Icon(Icons.restart_alt),
-              onPressed: () {
-                print('restart game');
-              },
-            ),
+                child: const Icon(Icons.pause),
+                onPressed: () {
+                  (game as DoodleDash).togglePauseState();
+                }),
           ),
         ],
       ),

@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:flame/game.dart';
 import 'package:flame/input.dart';
 import 'package:flutter/material.dart';
@@ -10,33 +12,20 @@ class DoodleDash extends FlameGame
     with HasKeyboardHandlerComponents, HasCollisionDetection {
   DoodleDash({super.children});
 
-  final World _world = World();
-  final PlatformManager platformManager = PlatformManager(
+  Player dash = Player();
+  World _world = World();
+
+  PlatformManager platformManager = PlatformManager(
     maxVerticalDistanceToNextPlatform:
         350, // TODO: (sprint 2) refactor to use a variable called jumpSpeed so this and Dash's jump are in sync, make responsive
   );
-  Player dash = Player();
 
   int screenBufferSpace = 100;
+  int score = 0;
 
   @override
   Future<void> onLoad() async {
     await add(_world);
-    // Set Dash's position, starting off screen ("below" camera)
-    dash.position = Vector2(
-      (_world.size.x - dash.size.x) / 2,
-      ((_world.size.y + screenBufferSpace) + dash.size.y),
-    );
-
-    // Add Dash component to the game
-    await add(dash);
-
-    // Add the platform manager component to the game
-    await add(platformManager);
-
-    // Add the Pause Button
-    overlays.add('gameOverlay');
-
     // Setting the World Bounds for the camera will allow the camera to "move up"
     // but stay fixed horizontally, allowing Dash to go out of camera on one side,
     // and re-appear on the other side.
@@ -47,9 +36,40 @@ class DoodleDash extends FlameGame
       _world.size.y +
           screenBufferSpace, // makes sure bottom bound of game is below bottom of screen
     );
+    await setupNewGame();
+  }
+
+  Future<void> setupNewGame() async {
+    // reset state if nessecary
+    if (children.contains(platformManager)) platformManager.removeFromParent();
+    if (children.contains(dash)) dash.removeFromParent();
+    score = 0;
+
+    // Set Dash's position, starting off screen ("below" camera)
+    dash = Player();
+    dash.position = Vector2(
+      (_world.size.x - dash.size.x) / 2,
+      ((_world.size.y + screenBufferSpace) + dash.size.y),
+    );
+
+    // Add Dash component to the game
+    await add(dash);
+
+    // Add the platform manager component to the game
+    // replace the platform every new game so that onMount is called
+    platformManager = PlatformManager(maxVerticalDistanceToNextPlatform: 350);
+    await add(platformManager);
 
     // Launches Dash from below the screen into frame when the game starts
     dash.megaJump();
+  }
+
+  // on mount is called after onLoad
+  @override
+  void onMount() {
+    super.onMount();
+    overlays.add('mainMenuOverlay');
+    pauseEngine();
   }
 
   @override
@@ -61,7 +81,7 @@ class DoodleDash extends FlameGame
     if (dash.isMovingDown) {
       camera.worldBounds = Rect.fromLTRB(
         0,
-        camera.position.y - screenBufferSpace, // TODO
+        camera.position.y - screenBufferSpace,
         camera.gameSize.x,
         camera.position.y + _world.size.y,
       );
@@ -69,23 +89,25 @@ class DoodleDash extends FlameGame
 
     var isInTopHalfOfScreen = dash.position.y <= (_world.size.y / 2);
     if (!dash.isMovingDown && isInTopHalfOfScreen) {
-      camera.followComponent(dash);
       // Here, we really only care about the "T" porition of the LTRB.
       // ensure that the world is always much taller than Dash will reach
       // we will want to consider not doing this on every frame tick if it
       // becomes janky
       camera.worldBounds = Rect.fromLTRB(
         0,
-        camera.position.y - screenBufferSpace, // TODO
+        camera.position.y - screenBufferSpace,
         camera.gameSize.x,
         camera.position.y + _world.size.y,
       );
+      camera.followComponent(dash);
     }
-
     // if Dash falls off screen, game over!
     if (dash.position.y >
-        camera.position.y + _world.size.y + dash.size.y + screenBufferSpace) {
-      // TODO (sprint 2): find a cleaner way to calculate bottom of screen
+        camera.position.y +
+            _world.size.y +
+            dash.size.y +
+            screenBufferSpace +
+            200) {
       onLose();
     }
   }
@@ -95,11 +117,28 @@ class DoodleDash extends FlameGame
     return const Color.fromARGB(255, 241, 247, 249);
   }
 
-  // TODO: Detect when Dash has fallen bellow the bottom platform
+  void startGame() async {
+    resumeEngine();
+    overlays.remove('mainMenuOverlay');
+  }
+
   void onLose() {
     pauseEngine();
     overlays.add('gameOverOverlay');
+    setupNewGame();
+  }
 
-    // TODO: Load Game Over text, restart button
+  void toMenuFromGameOver() {
+    dash.position = Vector2(0, 0);
+    overlays.remove('gameOverOverlay');
+    overlays.add('mainMenuOverlay');
+  }
+
+  void togglePauseState() {
+    if (paused) {
+      resumeEngine();
+    } else {
+      pauseEngine();
+    }
   }
 }

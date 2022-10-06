@@ -106,6 +106,7 @@ class Player extends SpriteGroupComponent<DashDirection>
       // Only want Dash to  “jump” when she is falling + collides with the top of a platform
       if (isMovingDown && isCollidingVertically) {
         jump();
+        gameRef.score++;
       }
 
       // TODO (sprint 3): Add collision behavior for power-ups
