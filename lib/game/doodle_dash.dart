@@ -6,33 +6,105 @@ import './world.dart';
 import 'platform_manager.dart';
 import 'sprites/sprites.dart';
 
+enum GameState { intro, playing, gameOver }
+
 class DoodleDash extends FlameGame
     with HasKeyboardHandlerComponents, HasCollisionDetection {
   DoodleDash({super.children});
 
+  final Player dash = Player();
   final World _world = World();
-  final PlatformManager platformManager = PlatformManager(
-    maxVerticalDistanceToNextPlatform:
-        350, // TODO: (sprint 2) refactor to use a variable called jumpSpeed so this and Dash's jump are in sync, make responsive
-  );
-  Player dash = Player();
+  PlatformManager platformManager =
+      PlatformManager(maxVerticalDistanceToNextPlatform: 350);
 
   int screenBufferSpace = 100;
+  GameState state = GameState.intro;
+  bool get isPlaying => state == GameState.playing;
+  bool get isGameOver => state == GameState.gameOver;
+  bool get isIntro => state == GameState.intro;
+
+  ValueNotifier<int> score = ValueNotifier(0);
 
   @override
   Future<void> onLoad() async {
     await add(_world);
-    // Set Dash's position, starting off screen ("below" camera)
-    dash.position = Vector2(
-      (_world.size.x - dash.size.x) / 2,
-      ((_world.size.y + screenBufferSpace) + dash.size.y),
-    );
+
+    // add the pause button and score keeper
+    overlays.add('gameOverlay');
 
     // Add Dash component to the game
     await add(dash);
 
-    // Add the platform manager component to the game
-    await add(platformManager);
+    initializeGameStart();
+  }
+
+  @override
+  void update(double dt) {
+    super.update(dt);
+
+    // stop updating in between games
+    if (isGameOver) {
+      return;
+    }
+
+    // show the main menu when the game launches
+    // And return so the engine doesn't  update as long as the menu is up.
+    if (isIntro) {
+      overlays.add('mainMenuOverlay');
+      return;
+    }
+
+    if (isPlaying) {
+      // Camera should only follow Dash when she's moving up, if she's following down
+      // the camera should stay where it is and NOT follow her down.
+      if (dash.isMovingDown) {
+        camera.worldBounds = Rect.fromLTRB(
+          0,
+          camera.position.y - screenBufferSpace,
+          camera.gameSize.x,
+          camera.position.y + _world.size.y,
+        );
+      }
+
+      var isInTopHalfOfScreen = dash.position.y <= (_world.size.y / 2);
+      if (!dash.isMovingDown && isInTopHalfOfScreen) {
+        // Here, we really only care about the "T" porition of the LTRB.
+        // ensure that the world is always much taller than Dash will reach
+        // we will want to consider not doing this on every frame tick if it
+        // becomes janky
+        camera.worldBounds = Rect.fromLTRB(
+          0,
+          camera.position.y - screenBufferSpace,
+          camera.gameSize.x,
+          camera.position.y + _world.size.y,
+        );
+        camera.followComponent(dash);
+      }
+      // if Dash falls off screen, game over!
+      if (dash.position.y >
+          camera.position.y + _world.size.y + dash.size.y + screenBufferSpace) {
+        onLose();
+      }
+    }
+  }
+
+  @override
+  Color backgroundColor() {
+    return const Color.fromARGB(255, 241, 247, 249);
+  }
+
+  // This method sets (or resets) the camera, dash and platform manager.
+  // It is called when you start a game.
+  void initializeGameStart() {
+    // remove platform if necessary, because a new one is made each time a new
+    // game is started.
+    if (children.contains(platformManager)) platformManager.removeFromParent();
+
+    // reset dash's velocity
+    dash.reset();
+
+    //reset score
+    score.value = 0;
 
     // Setting the World Bounds for the camera will allow the camera to "move up"
     // but stay fixed horizontally, allowing Dash to go out of camera on one side,
@@ -44,58 +116,40 @@ class DoodleDash extends FlameGame
       _world.size.y +
           screenBufferSpace, // makes sure bottom bound of game is below bottom of screen
     );
+    camera.followComponent(dash);
 
-    // Launches Dash from below the screen into frame when the game starts
-    dash.megaJump();
+    // move dash back to the start
+    dash.position = Vector2(
+      (_world.size.x - dash.size.x) / 2,
+      (_world.size.y - dash.size.y) / 2,
+    );
+
+    // reset the the platforms
+    platformManager = PlatformManager(maxVerticalDistanceToNextPlatform: 350);
+    add(platformManager);
   }
 
-  @override
-  void update(double dt) {
-    super.update(dt);
-
-    // Camera should only follow Dash when she's moving up, if she's following down
-    // the camera should stay where it is and NOT follow her down.
-    if (dash.isMovingDown) {
-      camera.worldBounds = Rect.fromLTRB(
-        0,
-        camera.position.y - screenBufferSpace, // TODO
-        camera.gameSize.x,
-        camera.position.y + _world.size.y,
-      );
-    }
-
-    var isInTopHalfOfScreen = dash.position.y <= (_world.size.y / 2);
-    if (!dash.isMovingDown && isInTopHalfOfScreen) {
-      camera.followComponent(dash);
-      // Here, we really only care about the "T" porition of the LTRB.
-      // ensure that the world is always much taller than Dash will reach
-      // we will want to consider not doing this on every frame tick if it
-      // becomes janky
-      camera.worldBounds = Rect.fromLTRB(
-        0,
-        camera.position.y - screenBufferSpace, // TODO
-        camera.gameSize.x,
-        camera.position.y + _world.size.y,
-      );
-    }
-
-    // if Dash falls off screen, game over!
-    if (dash.position.y >
-        camera.position.y + _world.size.y + dash.size.y + screenBufferSpace) {
-      // TODO (sprint 2): find a cleaner way to calculate bottom of screen
-      onLose();
-    }
+  void startGame() {
+    state = GameState.playing;
+    overlays.remove('mainMenuOverlay');
   }
 
-  @override
-  Color backgroundColor() {
-    return const Color.fromARGB(255, 241, 247, 249);
+  void resetGame() {
+    initializeGameStart();
+    startGame();
+    overlays.remove('gameOverOverlay');
   }
 
-  // TODO: Detect when Dash has fallen bellow the bottom platform
   void onLose() {
-    pauseEngine();
+    state = GameState.gameOver;
+    overlays.add('gameOverOverlay');
+  }
 
-    // TODO: Load Game Over text, restart button
+  void togglePauseState() {
+    if (paused) {
+      resumeEngine();
+    } else {
+      pauseEngine();
+    }
   }
 }

@@ -18,7 +18,7 @@ class Player extends SpriteGroupComponent<DashDirection>
           priority: 1,
         );
 
-  final Vector2 _velocity = Vector2.zero();
+  Vector2 _velocity = Vector2.zero();
 
   // used to calculate if the user is moving Dash left (-1) or right (1)
   int _hAxisInput = 0;
@@ -68,6 +68,10 @@ class Player extends SpriteGroupComponent<DashDirection>
     super.update(dt);
   }
 
+  void reset() {
+    _velocity = Vector2.zero();
+  }
+
   // When arrow keys are pressed, change Dash's travel direction + sprite
   @override
   bool onKeyEvent(RawKeyEvent event, Set<LogicalKeyboardKey> keysPressed) {
@@ -106,6 +110,7 @@ class Player extends SpriteGroupComponent<DashDirection>
       // Only want Dash to  “jump” when she is falling + collides with the top of a platform
       if (isMovingDown && isCollidingVertically) {
         jump();
+        gameRef.score.value++;
       }
 
       // TODO (sprint 3): Add collision behavior for power-ups
