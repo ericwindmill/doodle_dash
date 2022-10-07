@@ -45,6 +45,8 @@ class PlatformManager extends Component with HasGameRef<DoodleDash> {
     super.onMount();
   }
 
+  void reset() {}
+
   // This method determines where the next platform should be placed
   // It calculates a random distance between the minVerticalDistanceToNextPlatform
   // and the maxVerticalDistanceToNextPlatform, and returns a Y coordiate that is

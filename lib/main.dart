@@ -42,7 +42,7 @@ class _MyHomePageState extends State<MyHomePage> {
           // hot reload in development mode,
           game: game,
           overlayBuilderMap: <String, Widget Function(BuildContext, Game)>{
-            // 'gameOverlay': (context, game) => GameOverlay(game),
+            'gameOverlay': (context, game) => GameOverlay(game),
             'mainMenuOverlay': (context, game) => MainMenuOverlay(game),
             'gameOverOverlay': (context, game) => GameOverOverlay(game),
           },

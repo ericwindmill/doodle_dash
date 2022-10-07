@@ -15,7 +15,7 @@ class GameOverOverlay extends StatelessWidget {
     final double menuWidth = screenSize.width > 300 ? 300 : screenSize.width;
 
     return Material(
-      color: Colors.black38,
+      color: Colors.black45,
       child: Center(
         child: ConstrainedBox(
           constraints: BoxConstraints.tight(Size(menuWidth, menuHeight)),
@@ -27,13 +27,17 @@ class GameOverOverlay extends StatelessWidget {
                 'Game Over',
                 style: Theme.of(context).textTheme.displaySmall,
               ),
-              Text(
-                'Score: ${45}',
-                style: Theme.of(context).textTheme.displaySmall,
-              ), // todo: get game score
+              ValueListenableBuilder(
+                  valueListenable: (game as DoodleDash).score,
+                  builder: (context, value, child) {
+                    return Text(
+                      'Score: $value',
+                      style: Theme.of(context).textTheme.displaySmall,
+                    );
+                  }), // todo: get game score
               ElevatedButton(
                 onPressed: () {
-                  (game as DoodleDash).toMenuFromGameOver();
+                  (game as DoodleDash).resetGame();
                 },
                 style: ButtonStyle(
                   minimumSize: MaterialStateProperty.all(
@@ -42,7 +46,7 @@ class GameOverOverlay extends StatelessWidget {
                   textStyle: MaterialStateProperty.all(
                       Theme.of(context).textTheme.titleLarge),
                 ),
-                child: const Text('Menu'),
+                child: const Text('Play Again'),
               ),
             ],
           ),
