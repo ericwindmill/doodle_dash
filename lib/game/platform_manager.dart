@@ -46,7 +46,7 @@ class PlatformManager extends Component with HasGameRef<DoodleDash> {
 
   @override
   void onMount() {
-    setLevel(5);
+    setLevel(1);
 
     var currentX = (gameRef.size.x.floor() / 2).toDouble() - 50;
     // The first platform will always be in the bottom third of the initial screen
