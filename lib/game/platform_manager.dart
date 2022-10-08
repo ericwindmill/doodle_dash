@@ -7,17 +7,21 @@ import 'sprites/platform.dart';
 
 class Difficulty {
   double minHeight;
+  double maxHeight;
   double jumpSpeed;
 
-  Difficulty({required this.minHeight, required this.jumpSpeed});
+  Difficulty(
+      {required this.minHeight,
+      required this.maxHeight,
+      required this.jumpSpeed});
 }
 
 final Map<int, Difficulty> levels = {
-  1: Difficulty(minHeight: 200, jumpSpeed: 600),
-  2: Difficulty(minHeight: 300, jumpSpeed: 650),
-  3: Difficulty(minHeight: 400, jumpSpeed: 700),
-  4: Difficulty(minHeight: 500, jumpSpeed: 750),
-  5: Difficulty(minHeight: 600, jumpSpeed: 800),
+  1: Difficulty(minHeight: 200, maxHeight: 400, jumpSpeed: 600),
+  2: Difficulty(minHeight: 200, maxHeight: 500, jumpSpeed: 650),
+  3: Difficulty(minHeight: 200, maxHeight: 600, jumpSpeed: 700),
+  4: Difficulty(minHeight: 200, maxHeight: 700, jumpSpeed: 750),
+  5: Difficulty(minHeight: 200, maxHeight: 800, jumpSpeed: 800),
 };
 
 class PlatformManager extends Component with HasGameRef<DoodleDash> {
@@ -35,12 +39,10 @@ class PlatformManager extends Component with HasGameRef<DoodleDash> {
 
     if (difficulty == null) return;
 
-    double minVerticalDistance = difficulty.minHeight;
-
     level = newLevel;
-    minVerticalDistanceToNextPlatform = minVerticalDistance;
-    maxVerticalDistanceToNextPlatform = 200 + minVerticalDistance;
 
+    minVerticalDistanceToNextPlatform = difficulty.minHeight;
+    maxVerticalDistanceToNextPlatform = difficulty.maxHeight;
     gameRef.dash.setJumpSpeed(difficulty.jumpSpeed);
   }
 
