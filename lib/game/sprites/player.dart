@@ -26,7 +26,7 @@ class Player extends SpriteGroupComponent<DashDirection>
   // used to calculate the horizontal movement speed
   final double _moveSpeed = 400; // horizontal travel speed
   final double _gravity = 7; // acceleration pulling Dash down
-  final double _jumpSpeed = 600; // vertical travel speed
+  double _jumpSpeed = 600; // vertical travel speed
 
   @override
   Future<void> onLoad() async {
@@ -126,5 +126,9 @@ class Player extends SpriteGroupComponent<DashDirection>
 
   void megaJump() {
     _velocity.y = -_jumpSpeed * 1.5;
+  }
+
+  void setJumpSpeed(double jumpSpeed) {
+    _jumpSpeed = jumpSpeed;
   }
 }

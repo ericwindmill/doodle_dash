@@ -15,7 +15,7 @@ class DoodleDash extends FlameGame
   final Player dash = Player();
   final World _world = World();
   PlatformManager platformManager =
-      PlatformManager(maxVerticalDistanceToNextPlatform: 350);
+      PlatformManager(maxVerticalDistanceToNextPlatform: 1000);
 
   int screenBufferSpace = 100;
   GameState state = GameState.intro;
