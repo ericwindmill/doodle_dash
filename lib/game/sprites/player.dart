@@ -114,14 +114,17 @@ class Player extends SpriteGroupComponent<DashDirection>
       }
 
       // TODO (sprint 3): Add collision behavior for power-ups
+    } else if (other is SpringBoard) {
+      jump(specialJumpSpeed: _jumpSpeed * 2);
+      gameRef.score.value++;
     }
 
     super.onCollision(intersectionPoints, other);
   }
 
-  void jump() {
+  void jump({double? specialJumpSpeed}) {
     // Top left is 0,0 so going "up" is negative
-    _velocity.y = -_jumpSpeed;
+    _velocity.y = specialJumpSpeed != null ? -specialJumpSpeed : -_jumpSpeed;
   }
 
   void megaJump() {

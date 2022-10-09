@@ -46,6 +46,21 @@ class PlatformManager extends Component with HasGameRef<DoodleDash> {
     gameRef.dash.setJumpSpeed(difficulty.jumpSpeed);
   }
 
+  Platform randomPlatform(Vector2 position) {
+    switch (random.nextInt(3)) {
+      case 0:
+        return GrassPlatform(position: position);
+      case 1:
+        return SandPlatform(position: position);
+      case 2:
+        return StonePlatform(position: position);
+      case 3:
+        return Platform(position: position);
+      default:
+        return Platform(position: position);
+    }
+  }
+
   @override
   void onMount() {
     setLevel(1);
@@ -63,8 +78,8 @@ class PlatformManager extends Component with HasGameRef<DoodleDash> {
         currentY = _generateNextY();
       }
       platforms.add(
-        Platform(
-          position: Vector2(
+        randomPlatform(
+          Vector2(
             currentX,
             currentY,
           ),
@@ -115,7 +130,7 @@ class PlatformManager extends Component with HasGameRef<DoodleDash> {
       var newPlatY = _generateNextY();
       var newPlatX = _generateNextX();
 
-      final newPlat = Platform(position: Vector2(newPlatX, newPlatY));
+      final newPlat = randomPlatform(Vector2(newPlatX, newPlatY));
       add(newPlat);
 
       // after rendering, add to platforms queue for management
@@ -125,6 +140,10 @@ class PlatformManager extends Component with HasGameRef<DoodleDash> {
       final lowestPlat = platforms.removeAt(0);
       // remove component from game
       lowestPlat.removeFromParent();
+
+      final springPlat =
+          SpringBoard(position: Vector2(_generateNextX(), _generateNextY()));
+      add(springPlat);
     }
     super.update(dt);
   }
