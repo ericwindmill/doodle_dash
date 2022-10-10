@@ -26,7 +26,7 @@ class Player extends SpriteGroupComponent<DashDirection>
   // used to calculate the horizontal movement speed
   final double _moveSpeed = 400; // horizontal travel speed
   final double _gravity = 7; // acceleration pulling Dash down
-  final double _jumpSpeed = 600; // vertical travel speed
+  double _jumpSpeed = 600; // vertical travel speed
 
   @override
   Future<void> onLoad() async {
@@ -114,17 +114,24 @@ class Player extends SpriteGroupComponent<DashDirection>
       }
 
       // TODO (sprint 3): Add collision behavior for power-ups
+    } else if (other is SpringBoard) {
+      jump(specialJumpSpeed: _jumpSpeed * 2);
+      gameRef.score.value++;
     }
 
     super.onCollision(intersectionPoints, other);
   }
 
-  void jump() {
+  void jump({double? specialJumpSpeed}) {
     // Top left is 0,0 so going "up" is negative
-    _velocity.y = -_jumpSpeed;
+    _velocity.y = specialJumpSpeed != null ? -specialJumpSpeed : -_jumpSpeed;
   }
 
   void megaJump() {
     _velocity.y = -_jumpSpeed * 1.5;
+  }
+
+  void setJumpSpeed(double jumpSpeed) {
+    _jumpSpeed = jumpSpeed;
   }
 }
