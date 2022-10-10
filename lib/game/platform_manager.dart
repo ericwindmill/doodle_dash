@@ -12,7 +12,8 @@ class PlatformManager extends Component with HasGameRef<DoodleDash> {
   final double maxVerticalDistanceToNextPlatform;
 
   // TODO (sprint 2): Adjust this value to change game difficulty
-  final double minVerticalDistanceToNextPlatform = 200;
+  double minVerticalDistanceToNextPlatform = 0;
+  double currentMaxVerticalDistance = 100;
 
   PlatformManager({required this.maxVerticalDistanceToNextPlatform}) : super();
 
@@ -20,11 +21,11 @@ class PlatformManager extends Component with HasGameRef<DoodleDash> {
   void onMount() {
     // The first platform will always be in the bottom third of the initial screen
     var currentY =
-        gameRef.size.y - (random.nextInt(gameRef.size.y.floor()) / 3);
+        gameRef.size.y - (random.nextInt(gameRef.size.y.floor()) / 4);
 
     // Generate 10 Platforms at random x, y positions and add to list of platforms
     // to be populated in the game.
-    for (var i = 0; i < 9; i++) {
+    for (var i = 0; i < 29; i++) {
       if (i != 0) {
         currentY = _generateNextY();
       }
@@ -50,12 +51,15 @@ class PlatformManager extends Component with HasGameRef<DoodleDash> {
   // and the maxVerticalDistanceToNextPlatform, and returns a Y coordiate that is
   // that distance above the current highest platform
   double _generateNextY() {
-    final currentHighestPlatformY = platforms.last.center.y;
+    print('minDistanceNextPlatform: $minVerticalDistanceToNextPlatform');
+    // ensure that the next platform never overlaps with the last platform
+    final currentHighestPlatformY =
+        platforms.last.center.y - platforms.last.size.y;
     final distanceToNextY = minVerticalDistanceToNextPlatform.toInt() +
         random
-            .nextInt((maxVerticalDistanceToNextPlatform -
-                    minVerticalDistanceToNextPlatform)
-                .floor())
+            .nextInt(
+                (currentMaxVerticalDistance - minVerticalDistanceToNextPlatform)
+                    .floor())
             .toDouble();
 
     return currentHighestPlatformY - distanceToNextY;
@@ -63,6 +67,15 @@ class PlatformManager extends Component with HasGameRef<DoodleDash> {
 
   @override
   void update(double dt) {
+    // Increase the difficulty as the game progresses
+    // Update the `minVerticalDistanceToNextPlatform` every 5 jumps
+    // It should never increase higher than maxVeritclDistanceToNextPlatform
+    if (gameRef.score.value % 5 == 0 &&
+        minVerticalDistanceToNextPlatform + 10 <
+            maxVerticalDistanceToNextPlatform) {
+      minVerticalDistanceToNextPlatform += .01;
+    }
+
     final topOfLowestPlatform = platforms.first.position.y;
 
     final screenBottom = gameRef.dash.position.y +

@@ -17,7 +17,7 @@ class DoodleDash extends FlameGame
   PlatformManager platformManager =
       PlatformManager(maxVerticalDistanceToNextPlatform: 350);
 
-  int screenBufferSpace = 100;
+  int screenBufferSpace = 200;
   GameState state = GameState.intro;
   bool get isPlaying => state == GameState.playing;
   bool get isGameOver => state == GameState.gameOver;
