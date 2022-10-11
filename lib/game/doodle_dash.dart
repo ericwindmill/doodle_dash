@@ -14,10 +14,9 @@ class DoodleDash extends FlameGame
 
   final Player dash = Player();
   final World _world = World();
-  PlatformManager platformManager =
-      PlatformManager(maxVerticalDistanceToNextPlatform: 1000);
+  PlatformManager platformManager = PlatformManager();
 
-  int screenBufferSpace = 100;
+  int screenBufferSpace = 200;
   GameState state = GameState.intro;
   bool get isPlaying => state == GameState.playing;
   bool get isGameOver => state == GameState.gameOver;
@@ -125,7 +124,7 @@ class DoodleDash extends FlameGame
     );
 
     // reset the the platforms
-    platformManager = PlatformManager(maxVerticalDistanceToNextPlatform: 350);
+    platformManager = PlatformManager();
     add(platformManager);
   }
 

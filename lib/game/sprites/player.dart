@@ -99,7 +99,9 @@ class Player extends SpriteGroupComponent<DashDirection>
 
   // Callback for Dash colliding with another component in the game
   @override
-  void onCollision(Set<Vector2> intersectionPoints, PositionComponent other) {
+  void onCollisionStart(
+      Set<Vector2> intersectionPoints, PositionComponent other) {
+    super.onCollisionStart(intersectionPoints, other);
     if (other is Platform) {
       // Check if Dash is moving down and collides with a platform from the top
       // this allows Dash to move up _through_ platforms without collision
@@ -110,13 +112,11 @@ class Player extends SpriteGroupComponent<DashDirection>
       // Only want Dash to  “jump” when she is falling + collides with the top of a platform
       if (isMovingDown && isCollidingVertically) {
         jump();
-        gameRef.score.value++;
       }
 
       // TODO (sprint 3): Add collision behavior for power-ups
     } else if (other is SpringBoard) {
       jump(specialJumpSpeed: _jumpSpeed * 2);
-      gameRef.score.value++;
     }
 
     super.onCollision(intersectionPoints, other);
