@@ -69,8 +69,6 @@ class DoodleDash extends FlameGame
       if (!dash.isMovingDown && isInTopHalfOfScreen) {
         // Here, we really only care about the "T" porition of the LTRB.
         // ensure that the world is always much taller than Dash will reach
-        // we will want to consider not doing this on every frame tick if it
-        // becomes janky
         camera.worldBounds = Rect.fromLTRB(
           0,
           camera.position.y - screenBufferSpace,
