@@ -91,7 +91,7 @@ class DoodleDash extends FlameGame
   }
 
   // This method sets (or resets) the camera, dash and platform manager.
-  // It is called when you start a game.
+  // It is called when you start a game. Resets game state
   void initializeGameStart() {
     // remove platform if necessary, because a new one is made each time a new
     // game is started.

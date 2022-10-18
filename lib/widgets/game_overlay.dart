@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 
 import '../game/doodle_dash.dart';
 
+// Overlay that shows up during an active game
+
 class GameOverlay extends StatefulWidget {
   const GameOverlay(this.game, {super.key});
 
@@ -15,12 +17,14 @@ class GameOverlay extends StatefulWidget {
 class GameOverlayState extends State<GameOverlay> {
   bool isPaused = false;
 
+  // TODO: Style button
   @override
   Widget build(BuildContext context) {
     return Material(
       color: Colors.transparent,
       child: Stack(
         children: [
+          // TODO: Break out buttons into separate widgets
           Positioned(
             top: 30,
             left: 30,
@@ -65,6 +69,7 @@ class GameOverlayState extends State<GameOverlay> {
           ),
           if (isPaused)
             Positioned(
+              // positions button with width of button in mind
               top: MediaQuery.of(context).size.height / 2 - 72.0,
               right: MediaQuery.of(context).size.width / 2 - 72.0,
               child: const Icon(

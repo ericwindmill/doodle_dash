@@ -24,6 +24,7 @@ class Platform extends SpriteComponent
     await add(hitbox);
   }
 }
+// TODO: Rename Platforms for correct assets
 
 class GrassPlatform extends Platform {
   GrassPlatform({super.position});
@@ -57,6 +58,7 @@ class StonePlatform extends Platform {
 
 enum SpringState { down, up }
 
+// Once we have other component assets, they can be built in similar manner
 class SpringBoard extends SpriteGroupComponent<SpringState>
     with HasGameRef<DoodleDash>, CollisionCallbacks {
   final hitbox = RectangleHitbox();

@@ -6,6 +6,10 @@ import '../util/range.dart';
 import 'doodle_dash.dart';
 import 'sprites/platform.dart';
 
+// Spawn platforms for the game
+
+// TODO: Better integrate difficulty level and platform spacing + spawning
+
 class Difficulty {
   double minHeight;
   double maxHeight;
@@ -17,6 +21,9 @@ class Difficulty {
       required this.jumpSpeed});
 }
 
+// Configurations for different levels of difficulty,
+//the higher level the further away Dash may need to jump. Since
+// gravity is constant, jumpSpeed needs to accomodate for further distance.
 final Map<int, Difficulty> levels = {
   1: Difficulty(minHeight: 200, maxHeight: 400, jumpSpeed: 600),
   2: Difficulty(minHeight: 200, maxHeight: 500, jumpSpeed: 650),
@@ -63,8 +70,10 @@ class PlatformManager extends Component with HasGameRef<DoodleDash> {
 
   @override
   void onMount() {
+    // TODO: Ask user what level and set it here
     setLevel(1);
 
+    // Position Dash in the middle
     var currentX = (gameRef.size.x.floor() / 2).toDouble() - 50;
     // The first platform will always be in the bottom third of the initial screen
     var currentY =
@@ -72,6 +81,7 @@ class PlatformManager extends Component with HasGameRef<DoodleDash> {
 
     // Generate 30 Platforms at random x, y positions and add to list of platforms
     // to be populated in the game.
+    // TODO (Eric): add constraints to where the first 30 platforms can spawn
     for (var i = 0; i < 29; i++) {
       if (i != 0) {
         currentX = _generateNextX();
@@ -85,18 +95,17 @@ class PlatformManager extends Component with HasGameRef<DoodleDash> {
           ),
         ),
       );
-    }
 
-    for (var platform in platforms) {
       // Future proofing. Make sure that the platform height is always
       // equal to the height of the tallest platform.
-      if (platformHeight < platform.size.y) {
+      if (platformHeight < platforms[i].size.y) {
         platformHeight = platforms.first.size.y;
       }
 
-      add(platform);
+      add(platforms[i]);
     }
 
+    // TODO: Is putting this at the bottom or top idiomatic?
     super.onMount();
   }
 
@@ -111,15 +120,15 @@ class PlatformManager extends Component with HasGameRef<DoodleDash> {
     // -50 (width of platform) ensures the platform doesn't populate outside
     //right bound of game
     // Anchor is topLeft by default, so this X is the left most point of the platform
-    var nextPlatformAnchorX =
-        random.nextInt(gameRef.size.x.floor() - 50).toDouble();
+    // Platform width should always be 50 regardless of which platform.
+    double nextPlatformAnchorX;
 
     // If the previous platform and next overlap, try a new random X
-    while (previousPlatformXRange.overlaps(
-        Range(nextPlatformAnchorX, nextPlatformAnchorX + platformWidth))) {
+    do {
       nextPlatformAnchorX =
           random.nextInt(gameRef.size.x.floor() - 50).toDouble();
-    }
+    } while (previousPlatformXRange.overlaps(
+        Range(nextPlatformAnchorX, nextPlatformAnchorX + platformWidth)));
 
     return nextPlatformAnchorX;
   }
@@ -140,6 +149,8 @@ class PlatformManager extends Component with HasGameRef<DoodleDash> {
       minVerticalDistanceToNextPlatform += .1;
     }
 
+    // TODO (Khanh): Switch to difficulty level logic,
+    // increase level of difficulty every 20 or so platforms
     final distanceToNextY = minVerticalDistanceToNextPlatform.toInt() +
         random
             .nextInt((maxVerticalDistanceToNextPlatform -
@@ -180,6 +191,8 @@ class PlatformManager extends Component with HasGameRef<DoodleDash> {
       // It's the simplest way to do it
       gameRef.score.value++;
 
+      // TODO (Khanh): Randomize when a random platform might show up, 30% probability
+      // TODO: Add additional power up code here
       final springPlat =
           SpringBoard(position: Vector2(_generateNextX(), _generateNextY()));
       add(springPlat);

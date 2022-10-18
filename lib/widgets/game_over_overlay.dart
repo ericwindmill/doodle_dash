@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 
 import '../game/doodle_dash.dart';
 
+// Overlay that pops up when the game ends
+
 class GameOverOverlay extends StatelessWidget {
   const GameOverOverlay(this.game, {super.key});
 
@@ -11,13 +13,19 @@ class GameOverOverlay extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final screenSize = MediaQuery.of(context).size;
+
+    // Sets overlay width & height to be screen dimension or 300 at most.
+    // 300 was chosen as a good size that would be
+    // TODO: Refactor to be more idiomatic.
     final double menuHeight = screenSize.height > 300 ? 300 : screenSize.height;
     final double menuWidth = screenSize.width > 300 ? 300 : screenSize.width;
 
+    // TODO: Style widgets once asset design is close to complete
     return Material(
       color: Colors.black45,
       child: Center(
         child: ConstrainedBox(
+          // TODO: Included in refactor to be more idiomatic
           constraints: BoxConstraints.tight(Size(menuWidth, menuHeight)),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.spaceAround,

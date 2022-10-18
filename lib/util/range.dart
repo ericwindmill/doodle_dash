@@ -8,8 +8,4 @@ class Range {
     if (other.end > end && other.end < end) return true;
     return false;
   }
-
-  bool contains(double number) {
-    return number > start && number < end;
-  }
 }
