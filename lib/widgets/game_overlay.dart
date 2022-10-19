@@ -2,6 +2,7 @@ import 'package:flame/game.dart';
 import 'package:flutter/material.dart';
 
 import '../game/doodle_dash.dart';
+import 'score_display.dart';
 
 // Overlay that shows up during an active game
 
@@ -17,34 +18,17 @@ class GameOverlay extends StatefulWidget {
 class GameOverlayState extends State<GameOverlay> {
   bool isPaused = false;
 
-  // TODO: Style button
+  // TODO (ep 3): Style
   @override
   Widget build(BuildContext context) {
     return Material(
       color: Colors.transparent,
       child: Stack(
         children: [
-          // TODO: Break out buttons into separate widgets
           Positioned(
             top: 30,
             left: 30,
-            child: ValueListenableBuilder(
-                valueListenable: (widget.game as DoodleDash).score,
-                builder: (context, value, child) {
-                  return Text(
-                    'Score: $value',
-                    style: Theme.of(context).textTheme.displaySmall,
-                  );
-                }),
-          ),
-          Positioned(
-            top: 30,
-            right: 30,
-            child: ElevatedButton(
-                child: const Icon(Icons.pause),
-                onPressed: () {
-                  (widget.game as DoodleDash).togglePauseState();
-                }),
+            child: ScoreDisplay(game: widget.game),
           ),
           Positioned(
             top: 30,
@@ -68,6 +52,7 @@ class GameOverlayState extends State<GameOverlay> {
             ),
           ),
           if (isPaused)
+            // Displays a pause icon over the center of the game
             Positioned(
               // positions button with width of button in mind
               top: MediaQuery.of(context).size.height / 2 - 72.0,

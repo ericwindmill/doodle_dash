@@ -1,3 +1,4 @@
+import 'package:doodle_dash/widgets/score_display.dart';
 import 'package:flame/game.dart';
 import 'package:flutter/material.dart';
 
@@ -12,11 +13,9 @@ class GameOverOverlay extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final screenSize = MediaQuery.of(context).size;
-
     // Sets overlay width & height to be screen dimension or 300 at most.
-    // 300 was chosen as a good size that would be
-    // TODO: Refactor to be more idiomatic.
+    // 300 is arbitrary, but looks good
+    final screenSize = MediaQuery.of(context).size;
     final double menuHeight = screenSize.height > 300 ? 300 : screenSize.height;
     final double menuWidth = screenSize.width > 300 ? 300 : screenSize.width;
 
@@ -25,7 +24,6 @@ class GameOverOverlay extends StatelessWidget {
       color: Colors.black45,
       child: Center(
         child: ConstrainedBox(
-          // TODO: Included in refactor to be more idiomatic
           constraints: BoxConstraints.tight(Size(menuWidth, menuHeight)),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -35,14 +33,9 @@ class GameOverOverlay extends StatelessWidget {
                 'Game Over',
                 style: Theme.of(context).textTheme.displaySmall,
               ),
-              ValueListenableBuilder(
-                  valueListenable: (game as DoodleDash).score,
-                  builder: (context, value, child) {
-                    return Text(
-                      'Score: $value',
-                      style: Theme.of(context).textTheme.displaySmall,
-                    );
-                  }), // todo: get game score
+              ScoreDisplay(
+                game: game,
+              ),
               ElevatedButton(
                 onPressed: () {
                   (game as DoodleDash).resetGame();

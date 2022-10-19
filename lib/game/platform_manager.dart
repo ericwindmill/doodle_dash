@@ -6,10 +6,6 @@ import '../util/range.dart';
 import 'doodle_dash.dart';
 import 'sprites/platform.dart';
 
-// Spawn platforms for the game
-
-// TODO: Better integrate difficulty level and platform spacing + spawning
-
 class Difficulty {
   double minHeight;
   double maxHeight;
@@ -32,6 +28,7 @@ final Map<int, Difficulty> levels = {
   5: Difficulty(minHeight: 200, maxHeight: 800, jumpSpeed: 800),
 };
 
+// Spawns the platforms for the game
 class PlatformManager extends Component with HasGameRef<DoodleDash> {
   int level = 1;
   final Random random = Random();
@@ -70,7 +67,9 @@ class PlatformManager extends Component with HasGameRef<DoodleDash> {
 
   @override
   void onMount() {
-    // TODO: Ask user what level and set it here
+    super.onMount();
+
+    // TODO (future episode): Ask user what level and set it here
     setLevel(1);
 
     // Position Dash in the middle
@@ -104,9 +103,6 @@ class PlatformManager extends Component with HasGameRef<DoodleDash> {
 
       add(platforms[i]);
     }
-
-    // TODO: Is putting this at the bottom or top idiomatic?
-    super.onMount();
   }
 
   double _generateNextX() {
@@ -140,14 +136,6 @@ class PlatformManager extends Component with HasGameRef<DoodleDash> {
   double _generateNextY() {
     // Adding platformHeight prevents platforms from overlapping.
     final currentHighestPlatformY = platforms.last.center.y + platformHeight;
-
-    // Increase distance between platforms over time
-    // The greatest minVerticalDistance will never be more than
-    // 50 less maxVerticalDistance
-    if (minVerticalDistanceToNextPlatform + 50 <=
-        maxVerticalDistanceToNextPlatform) {
-      minVerticalDistanceToNextPlatform += .1;
-    }
 
     // TODO (Khanh): Switch to difficulty level logic,
     // increase level of difficulty every 20 or so platforms
@@ -192,7 +180,7 @@ class PlatformManager extends Component with HasGameRef<DoodleDash> {
       gameRef.score.value++;
 
       // TODO (Khanh): Randomize when a random platform might show up, 30% probability
-      // TODO: Add additional power up code here
+      // TODO (future episode): Add additional power up code here
       final springPlat =
           SpringBoard(position: Vector2(_generateNextX(), _generateNextY()));
       add(springPlat);
