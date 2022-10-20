@@ -80,7 +80,6 @@ class PlatformManager extends Component with HasGameRef<DoodleDash> {
 
     // Generate 30 Platforms at random x, y positions and add to list of platforms
     // to be populated in the game.
-    // TODO (Eric): add constraints to where the first 30 platforms can spawn
     for (var i = 0; i < 29; i++) {
       if (i != 0) {
         currentX = _generateNextX();
@@ -114,7 +113,7 @@ class PlatformManager extends Component with HasGameRef<DoodleDash> {
     );
 
     // -50 (width of platform) ensures the platform doesn't populate outside
-    //right bound of game
+    // right bound of game
     // Anchor is topLeft by default, so this X is the left most point of the platform
     // Platform width should always be 50 regardless of which platform.
     double nextPlatformAnchorX;
@@ -136,13 +135,13 @@ class PlatformManager extends Component with HasGameRef<DoodleDash> {
   double _generateNextY() {
     // Adding platformHeight prevents platforms from overlapping.
     final currentHighestPlatformY = platforms.last.center.y + platformHeight;
-
+  
     // TODO (Khanh): Switch to difficulty level logic,
     // increase level of difficulty every 20 or so platforms
     final distanceToNextY = minVerticalDistanceToNextPlatform.toInt() +
         random
             .nextInt((maxVerticalDistanceToNextPlatform -
-                    minVerticalDistanceToNextPlatform)
+                    minVerticalDistanceToNextPlatform )
                 .floor())
             .toDouble();
 

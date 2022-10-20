@@ -24,7 +24,7 @@ class Platform extends SpriteComponent
     await add(hitbox);
   }
 }
-// TODO: Rename Platforms for correct assets
+// TODO (ep 3): Rename Platforms for correct assets
 
 class GrassPlatform extends Platform {
   GrassPlatform({super.position});
@@ -95,13 +95,5 @@ class SpringBoard extends SpriteGroupComponent<SpringState>
     super.onCollisionStart(intersectionPoints, other);
 
     current = SpringState.down;
-  }
-
-  @override
-  void onCollisionEnd(PositionComponent other) {
-    // TODO: implement onCollisionEnd
-    super.onCollisionEnd(other);
-
-    current = SpringState.up;
   }
 }

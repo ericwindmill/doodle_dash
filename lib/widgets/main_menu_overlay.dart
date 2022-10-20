@@ -14,15 +14,16 @@ class MainMenuOverlay extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+
+    // The menu height and width is 300, unless the device screen is smaller than 300 x 300, 
+    // then it takes up the entire screen.
     final screenSize = MediaQuery.of(context).size;
-    // TODO: make more idiomatic
     final double menuHeight = screenSize.height > 300 ? 300 : screenSize.height;
     final double menuWidth = screenSize.width > 300 ? 300 : screenSize.width;
 
     return Material(
       child: Center(
         child: ConstrainedBox(
-          // TODO: Also make more idiomatic
           constraints: BoxConstraints.tight(Size(menuWidth, menuHeight)),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
