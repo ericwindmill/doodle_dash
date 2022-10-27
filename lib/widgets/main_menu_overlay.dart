@@ -2,6 +2,7 @@ import 'package:flame/game.dart';
 import 'package:flutter/material.dart';
 
 import '../game/doodle_dash.dart';
+import '../util/theme.dart';
 
 // Overlay that appears for the main menu
 
@@ -20,6 +21,7 @@ class _MainMenuOverlayState extends State<MainMenuOverlay> {
   @override
   Widget build(BuildContext context) {
     return Material(
+      color: Palette.background,
       child: Padding(
         padding: const EdgeInsets.all(24.0),
         child: Center(
@@ -28,16 +30,25 @@ class _MainMenuOverlayState extends State<MainMenuOverlay> {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               Text(
-                'Doodle Dash!',
-                style: Theme.of(context).textTheme.displaySmall,
+                'Doodle Dash',
+                style: Theme.of(context)
+                    .textTheme
+                    .displaySmall!
+                    .copyWith(color: Palette.lightText),
               ),
               const WhiteSpace(),
-              Text(
-                'Select character',
-                style: Theme.of(context).textTheme.headlineMedium,
+              Align(
+                alignment: Alignment.centerLeft,
+                child: Text(
+                  'Select character:',
+                  style: Theme.of(context)
+                      .textTheme
+                      .headlineSmall!
+                      .copyWith(color: Palette.lightText),
+                ),
               ),
               Row(
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   OutlinedButton(
                     onPressed: () {
@@ -51,11 +62,14 @@ class _MainMenuOverlayState extends State<MainMenuOverlay> {
                       ),
                       backgroundColor: MaterialStateProperty.resolveWith<Color>(
                         (states) {
-                          if (character != null &&
-                              character == Character.dash) {
-                            return Theme.of(context).primaryColor;
+                          if (states.contains(MaterialState.hovered)) {
+                            return Palette.spaceLight;
                           }
-                          return Colors.transparent;
+                          if (character != null &&
+                              character == Character.sparky) {
+                            return Palette.spaceLight;
+                          }
+                          return Palette.spaceMedium;
                         },
                       ),
                     ),
@@ -80,11 +94,14 @@ class _MainMenuOverlayState extends State<MainMenuOverlay> {
                       ),
                       backgroundColor: MaterialStateProperty.resolveWith<Color>(
                         (states) {
+                          if (states.contains(MaterialState.hovered)) {
+                            return Palette.spaceLight;
+                          }
                           if (character != null &&
                               character == Character.sparky) {
-                            return Theme.of(context).primaryColor;
+                            return Palette.spaceLight;
                           }
-                          return Colors.transparent;
+                          return Palette.spaceMedium;
                         },
                       ),
                     ),
@@ -102,9 +119,18 @@ class _MainMenuOverlayState extends State<MainMenuOverlay> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Text('Difficulty:'),
+                  Text(
+                    'Difficulty:',
+                    style: Theme.of(context)
+                        .textTheme
+                        .bodyLarge!
+                        .copyWith(color: Palette.lightText),
+                  ),
                   Expanded(
                     child: Slider(
+                      thumbColor: Palette.accent,
+                      activeColor: Palette.active,
+                      inactiveColor: Palette.inactive,
                       value: (widget.game as DoodleDash).level.toDouble(),
                       max: 5,
                       min: 1,
