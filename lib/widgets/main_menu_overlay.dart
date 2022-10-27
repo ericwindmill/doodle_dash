@@ -5,51 +5,134 @@ import '../game/doodle_dash.dart';
 
 // Overlay that appears for the main menu
 
-class MainMenuOverlay extends StatelessWidget {
+class MainMenuOverlay extends StatefulWidget {
   const MainMenuOverlay(this.game, {super.key});
 
   final Game game;
 
-  // TODO: Definitely style this overlay more
+  @override
+  State<MainMenuOverlay> createState() => _MainMenuOverlayState();
+}
+
+class _MainMenuOverlayState extends State<MainMenuOverlay> {
+  Character? character;
 
   @override
   Widget build(BuildContext context) {
-
-    // The menu height and width is 300, unless the device screen is smaller than 300 x 300, 
-    // then it takes up the entire screen.
-    final screenSize = MediaQuery.of(context).size;
-    final double menuHeight = screenSize.height > 300 ? 300 : screenSize.height;
-    final double menuWidth = screenSize.width > 300 ? 300 : screenSize.width;
-
     return Material(
       child: Center(
-        child: ConstrainedBox(
-          constraints: BoxConstraints.tight(Size(menuWidth, menuHeight)),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                'Doodle Dash!',
-                style: Theme.of(context).textTheme.displaySmall,
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Text(
+              'Doodle Dash!',
+              style: Theme.of(context).textTheme.displaySmall,
+            ),
+            const WhiteSpace(),
+            Text(
+              'Select character',
+              style: Theme.of(context).textTheme.headlineMedium,
+            ),
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                children: [
+                  OutlinedButton(
+                    onPressed: () {
+                      setState(() {
+                        character = Character.dash;
+                      });
+                    },
+                    style: ButtonStyle(
+                      side: MaterialStateProperty.all(
+                        const BorderSide(color: Colors.black38, width: 2),
+                      ),
+                      backgroundColor: MaterialStateProperty.resolveWith<Color>(
+                        (states) {
+                          if (character != null &&
+                              character == Character.dash) {
+                            return Theme.of(context).primaryColor;
+                          }
+                          return Colors.transparent;
+                        },
+                      ),
+                    ),
+                    child: Padding(
+                      padding: const EdgeInsets.all(24.0),
+                      child: Image.asset(
+                        'images/game/left_dash.png',
+                        height: 150,
+                        width: 150,
+                      ),
+                    ),
+                  ),
+                  OutlinedButton(
+                    onPressed: () {
+                      setState(() {
+                        character = Character.sparky;
+                      });
+                    },
+                    style: ButtonStyle(
+                      side: MaterialStateProperty.all(
+                        const BorderSide(color: Colors.black38, width: 2),
+                      ),
+                      backgroundColor: MaterialStateProperty.resolveWith<Color>(
+                        (states) {
+                          if (character != null &&
+                              character == Character.sparky) {
+                            return Theme.of(context).primaryColor;
+                          }
+                          return Colors.transparent;
+                        },
+                      ),
+                    ),
+                    child: Padding(
+                      padding: const EdgeInsets.all(24.0),
+                      child: Image.asset(
+                        'images/game/right_sparky.png',
+                        height: 150,
+                        width: 150,
+                      ),
+                    ),
+                  ),
+                ],
               ),
-              ElevatedButton(
-                onPressed: () {
-                  (game as DoodleDash).startGame();
-                },
+            ),
+            const WhiteSpace(),
+            Center(
+              child: ElevatedButton(
+                onPressed: (character != null)
+                    ? () async {
+                        (widget.game as DoodleDash).selectCharacter(character!);
+                        (widget.game as DoodleDash).startGame();
+                      }
+                    : null,
                 style: ButtonStyle(
                   minimumSize: MaterialStateProperty.all(
-                    const Size.fromHeight(40),
+                    const Size(100, 50),
                   ),
                   textStyle: MaterialStateProperty.all(
                       Theme.of(context).textTheme.titleLarge),
                 ),
-                child: const Text('Play'),
+                child: const Text('Start'),
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
+    );
+  }
+}
+
+class WhiteSpace extends StatelessWidget {
+  const WhiteSpace({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return const SizedBox(
+      height: 100,
     );
   }
 }

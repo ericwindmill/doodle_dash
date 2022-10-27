@@ -2,17 +2,20 @@ import 'package:flame/game.dart';
 import 'package:flame/input.dart';
 import 'package:flutter/material.dart';
 
+import '../widgets/main_menu_overlay.dart';
 import './world.dart';
 import 'platform_manager.dart';
 import 'sprites/sprites.dart';
 
 enum GameState { intro, playing, gameOver }
 
+enum Character { dash, sparky }
+
 class DoodleDash extends FlameGame
     with HasKeyboardHandlerComponents, HasCollisionDetection {
   DoodleDash({super.children});
 
-  final Player dash = Player();
+  late Player player;
   final World _world = World();
   PlatformManager platformManager = PlatformManager();
 
@@ -21,7 +24,7 @@ class DoodleDash extends FlameGame
   bool get isPlaying => state == GameState.playing;
   bool get isGameOver => state == GameState.gameOver;
   bool get isIntro => state == GameState.intro;
-
+  Character character = Character.dash;
   ValueNotifier<int> score = ValueNotifier(0);
 
   @override
@@ -30,11 +33,6 @@ class DoodleDash extends FlameGame
 
     // add the pause button and score keeper
     overlays.add('gameOverlay');
-
-    // Add Dash component to the game
-    await add(dash);
-
-    initializeGameStart();
   }
 
   @override
@@ -56,7 +54,7 @@ class DoodleDash extends FlameGame
     if (isPlaying) {
       // Camera should only follow Dash when she's moving up, if she's following down
       // the camera should stay where it is and NOT follow her down.
-      if (dash.isMovingDown) {
+      if (player.isMovingDown) {
         camera.worldBounds = Rect.fromLTRB(
           0,
           camera.position.y - screenBufferSpace,
@@ -65,8 +63,8 @@ class DoodleDash extends FlameGame
         );
       }
 
-      var isInTopHalfOfScreen = dash.position.y <= (_world.size.y / 2);
-      if (!dash.isMovingDown && isInTopHalfOfScreen) {
+      var isInTopHalfOfScreen = player.position.y <= (_world.size.y / 2);
+      if (!player.isMovingDown && isInTopHalfOfScreen) {
         // Here, we really only care about the "T" porition of the LTRB.
         // ensure that the world is always much taller than Dash will reach
         camera.worldBounds = Rect.fromLTRB(
@@ -75,11 +73,14 @@ class DoodleDash extends FlameGame
           camera.gameSize.x,
           camera.position.y + _world.size.y,
         );
-        camera.followComponent(dash);
+        camera.followComponent(player);
       }
       // if Dash falls off screen, game over!
-      if (dash.position.y >
-          camera.position.y + _world.size.y + dash.size.y + screenBufferSpace) {
+      if (player.position.y >
+          camera.position.y +
+              _world.size.y +
+              player.size.y +
+              screenBufferSpace) {
         onLose();
       }
     }
@@ -97,8 +98,7 @@ class DoodleDash extends FlameGame
     // game is started.
     if (children.contains(platformManager)) platformManager.removeFromParent();
 
-    // reset dash's velocity
-    dash.reset();
+    player.reset();
 
     //reset score
     score.value = 0;
@@ -113,12 +113,12 @@ class DoodleDash extends FlameGame
       _world.size.y +
           screenBufferSpace, // makes sure bottom bound of game is below bottom of screen
     );
-    camera.followComponent(dash);
+    camera.followComponent(player);
 
     // move dash back to the start
-    dash.position = Vector2(
-      (_world.size.x - dash.size.x) / 2,
-      (_world.size.y - dash.size.y) / 2,
+    player.position = Vector2(
+      (_world.size.x - player.size.x) / 2,
+      (_world.size.y - player.size.y) / 2,
     );
 
     // reset the the platforms
@@ -126,13 +126,19 @@ class DoodleDash extends FlameGame
     add(platformManager);
   }
 
+  void selectCharacter(Character character) {
+    this.character = character;
+    this.player = Player(character: character);
+    add(player);
+  }
+
   void startGame() {
+    initializeGameStart();
     state = GameState.playing;
     overlays.remove('mainMenuOverlay');
   }
 
   void resetGame() {
-    initializeGameStart();
     startGame();
     overlays.remove('gameOverOverlay');
   }

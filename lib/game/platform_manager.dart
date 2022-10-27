@@ -47,7 +47,7 @@ class PlatformManager extends Component with HasGameRef<DoodleDash> {
 
     minVerticalDistanceToNextPlatform = difficulty.minHeight;
     maxVerticalDistanceToNextPlatform = difficulty.maxHeight;
-    gameRef.dash.setJumpSpeed(difficulty.jumpSpeed);
+    gameRef.player.setJumpSpeed(difficulty.jumpSpeed);
   }
 
   Platform randomPlatform(Vector2 position) {
@@ -135,13 +135,13 @@ class PlatformManager extends Component with HasGameRef<DoodleDash> {
   double _generateNextY() {
     // Adding platformHeight prevents platforms from overlapping.
     final currentHighestPlatformY = platforms.last.center.y + platformHeight;
-  
+
     // TODO (Khanh): Switch to difficulty level logic,
     // increase level of difficulty every 20 or so platforms
     final distanceToNextY = minVerticalDistanceToNextPlatform.toInt() +
         random
             .nextInt((maxVerticalDistanceToNextPlatform -
-                    minVerticalDistanceToNextPlatform )
+                    minVerticalDistanceToNextPlatform)
                 .floor())
             .toDouble();
 
@@ -153,7 +153,7 @@ class PlatformManager extends Component with HasGameRef<DoodleDash> {
     // Adding Platform Height will ensure that 2 platforms don't overlap.
     final topOfLowestPlatform = platforms.first.position.y + platformHeight;
 
-    final screenBottom = gameRef.dash.position.y +
+    final screenBottom = gameRef.player.position.y +
         (gameRef.size.x / 2) +
         gameRef.screenBufferSpace;
 
