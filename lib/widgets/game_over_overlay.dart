@@ -2,6 +2,8 @@ import 'package:flame/game.dart';
 import 'package:flutter/material.dart';
 
 import '../game/doodle_dash.dart';
+import '../util/theme.dart';
+import 'main_menu_overlay.dart';
 import 'score_display.dart';
 
 // Overlay that pops up when the game ends
@@ -13,28 +15,28 @@ class GameOverOverlay extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Sets overlay width & height to be screen dimension or 300 at most.
-    // 300 is arbitrary, but looks good
-    final screenSize = MediaQuery.of(context).size;
-    final double menuHeight = screenSize.height > 300 ? 300 : screenSize.height;
-    final double menuWidth = screenSize.width > 300 ? 300 : screenSize.width;
-
-    // TODO: Style widgets once asset design is close to complete
     return Material(
-      color: Colors.black45,
+      color: Colors.black87,
       child: Center(
-        child: ConstrainedBox(
-          constraints: BoxConstraints.tight(Size(menuWidth, menuHeight)),
+        child: Padding(
+          padding: const EdgeInsets.all(48.0),
           child: Column(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
                 'Game Over',
-                style: Theme.of(context).textTheme.displaySmall,
+                style: Theme.of(context).textTheme.displayMedium!.copyWith(
+                      color: Palette.lightText,
+                    ),
               ),
+              const WhiteSpace(height: 50),
               ScoreDisplay(
                 game: game,
+                isLight: true,
+              ),
+              const WhiteSpace(
+                height: 50,
               ),
               ElevatedButton(
                 onPressed: () {
@@ -42,7 +44,7 @@ class GameOverOverlay extends StatelessWidget {
                 },
                 style: ButtonStyle(
                   minimumSize: MaterialStateProperty.all(
-                    const Size.fromHeight(40),
+                    const Size(200, 75),
                   ),
                   textStyle: MaterialStateProperty.all(
                       Theme.of(context).textTheme.titleLarge),

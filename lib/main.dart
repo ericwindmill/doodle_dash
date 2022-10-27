@@ -1,7 +1,9 @@
 import 'package:flame/game.dart';
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 import 'game/doodle_dash.dart';
+import 'util/theme.dart';
 import 'widgets/game_over_overlay.dart';
 import 'widgets/game_overlay.dart';
 import 'widgets/main_menu_overlay.dart';
@@ -17,7 +19,8 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Doodle Dash',
       theme: ThemeData(
-        primarySwatch: Colors.blue,
+        primarySwatch: Palette.primarySwatch,
+        textTheme: appFontTheme,
       ),
       home: const MyHomePage(title: 'Doodle Dash'),
     );

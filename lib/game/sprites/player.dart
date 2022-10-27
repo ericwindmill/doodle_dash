@@ -7,11 +7,11 @@ import 'package:flutter/services.dart';
 import '../doodle_dash.dart';
 import 'platform.dart';
 
-enum DashDirection { left, right }
+enum PlayerDirection { left, right, center }
 
-class Player extends SpriteGroupComponent<DashDirection>
+class Player extends SpriteGroupComponent<PlayerDirection>
     with HasGameRef<DoodleDash>, KeyboardHandler, CollisionCallbacks {
-  Player({super.position})
+  Player({super.position, required this.character})
       : super(
           size: Vector2.all(100),
           anchor: Anchor.center,
@@ -23,9 +23,11 @@ class Player extends SpriteGroupComponent<DashDirection>
   // used to calculate if the user is moving Dash left (-1) or right (1)
   int _hAxisInput = 0;
 
+  Character character;
+
   // used to calculate the horizontal movement speed
   final double _moveSpeed = 400; // horizontal travel speed
-  final double _gravity = 7; // acceleration pulling Dash down
+  final double _gravity = 9; // acceleration pulling Dash down
   double _jumpSpeed = 600; // vertical travel speed
 
   @override
@@ -35,21 +37,16 @@ class Player extends SpriteGroupComponent<DashDirection>
     // Add collision detection on Dash
     await add(CircleHitbox());
 
-    // Load & configure sprite assets
-    final leftDash = await gameRef.loadSprite('game/left_dash.png');
-    final rightDash = await gameRef.loadSprite('game/right_dash.png');
-
-    sprites = <DashDirection, Sprite>{
-      DashDirection.left: leftDash,
-      DashDirection.right: rightDash,
-    };
+    await _loadCharacterSprites();
 
     // arbitrarily start with Dash facing right
-    current = DashDirection.right;
+    current = PlayerDirection.center;
   }
 
   @override
   void update(double dt) {
+    if (gameRef.isIntro) return;
+
     _velocity.x = _hAxisInput * _moveSpeed; // Dash's horizontal velocity
     _velocity.y +=
         _gravity; // Gravity is always acting on Dash's vertical veloctiy
@@ -78,12 +75,12 @@ class Player extends SpriteGroupComponent<DashDirection>
     _hAxisInput = 0;
 
     if (keysPressed.contains(LogicalKeyboardKey.arrowLeft)) {
-      current = DashDirection.left;
+      current = PlayerDirection.left;
       _hAxisInput += -1;
     }
 
     if (keysPressed.contains(LogicalKeyboardKey.arrowRight)) {
-      current = DashDirection.right;
+      current = PlayerDirection.right;
       _hAxisInput += 1;
     }
 
@@ -133,5 +130,18 @@ class Player extends SpriteGroupComponent<DashDirection>
 
   void setJumpSpeed(double jumpSpeed) {
     _jumpSpeed = jumpSpeed;
+  }
+
+  Future<void> _loadCharacterSprites() async {
+    print(character.name);
+    // Load & configure sprite assets
+    final left = await gameRef.loadSprite('game/left_${character.name}.png');
+    final right = await gameRef.loadSprite('game/right_${character.name}.png');
+    final center = await gameRef.loadSprite('game/left_${character.name}.png');
+    sprites = <PlayerDirection, Sprite>{
+      PlayerDirection.left: left,
+      PlayerDirection.right: right,
+      PlayerDirection.center: center,
+    };
   }
 }
