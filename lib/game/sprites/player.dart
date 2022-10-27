@@ -7,9 +7,9 @@ import 'package:flutter/services.dart';
 import '../doodle_dash.dart';
 import 'platform.dart';
 
-enum DashDirection { left, right, center }
+enum PlayerDirection { left, right, center }
 
-class Player extends SpriteGroupComponent<DashDirection>
+class Player extends SpriteGroupComponent<PlayerDirection>
     with HasGameRef<DoodleDash>, KeyboardHandler, CollisionCallbacks {
   Player({super.position, required this.character})
       : super(
@@ -40,7 +40,7 @@ class Player extends SpriteGroupComponent<DashDirection>
     await _loadCharacterSprites();
 
     // arbitrarily start with Dash facing right
-    current = DashDirection.center;
+    current = PlayerDirection.center;
   }
 
   @override
@@ -75,12 +75,12 @@ class Player extends SpriteGroupComponent<DashDirection>
     _hAxisInput = 0;
 
     if (keysPressed.contains(LogicalKeyboardKey.arrowLeft)) {
-      current = DashDirection.left;
+      current = PlayerDirection.left;
       _hAxisInput += -1;
     }
 
     if (keysPressed.contains(LogicalKeyboardKey.arrowRight)) {
-      current = DashDirection.right;
+      current = PlayerDirection.right;
       _hAxisInput += 1;
     }
 
@@ -138,10 +138,10 @@ class Player extends SpriteGroupComponent<DashDirection>
     final left = await gameRef.loadSprite('game/left_${character.name}.png');
     final right = await gameRef.loadSprite('game/right_${character.name}.png');
     final center = await gameRef.loadSprite('game/left_${character.name}.png');
-    sprites = <DashDirection, Sprite>{
-      DashDirection.left: left,
-      DashDirection.right: right,
-      DashDirection.center: center,
+    sprites = <PlayerDirection, Sprite>{
+      PlayerDirection.left: left,
+      PlayerDirection.right: right,
+      PlayerDirection.center: center,
     };
   }
 }

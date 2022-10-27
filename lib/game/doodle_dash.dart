@@ -26,6 +26,7 @@ class DoodleDash extends FlameGame
   bool get isIntro => state == GameState.intro;
   Character character = Character.dash;
   ValueNotifier<int> score = ValueNotifier(0);
+  int level = 1;
 
   @override
   Future<void> onLoad() async {
@@ -122,14 +123,18 @@ class DoodleDash extends FlameGame
     );
 
     // reset the the platforms
-    platformManager = PlatformManager();
+    platformManager = PlatformManager(level: level);
     add(platformManager);
   }
 
   void selectCharacter(Character character) {
     this.character = character;
-    this.player = Player(character: character);
+    player = Player(character: character);
     add(player);
+  }
+
+  void selectDifficulty(int level) {
+    this.level = level;
   }
 
   void startGame() {

@@ -19,7 +19,6 @@ class GameOverOverlay extends StatelessWidget {
     final double menuHeight = screenSize.height > 300 ? 300 : screenSize.height;
     final double menuWidth = screenSize.width > 300 ? 300 : screenSize.width;
 
-    // TODO: Style widgets once asset design is close to complete
     return Material(
       color: Colors.black45,
       child: Center(

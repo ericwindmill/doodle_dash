@@ -30,6 +30,8 @@ final Map<int, Difficulty> levels = {
 
 // Spawns the platforms for the game
 class PlatformManager extends Component with HasGameRef<DoodleDash> {
+  PlatformManager({this.level = 1});
+
   int level = 1;
   final Random random = Random();
   final List<Platform> platforms = [];
@@ -70,7 +72,7 @@ class PlatformManager extends Component with HasGameRef<DoodleDash> {
     super.onMount();
 
     // TODO (future episode): Ask user what level and set it here
-    setLevel(1);
+    setLevel(level);
 
     // Position Dash in the middle
     var currentX = (gameRef.size.x.floor() / 2).toDouble() - 50;

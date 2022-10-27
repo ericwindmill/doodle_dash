@@ -18,7 +18,6 @@ class GameOverlay extends StatefulWidget {
 class GameOverlayState extends State<GameOverlay> {
   bool isPaused = false;
 
-  // TODO (ep 3): Style
   @override
   Widget build(BuildContext context) {
     return Material(
@@ -45,9 +44,11 @@ class GameOverlayState extends State<GameOverlay> {
                     ),
               onPressed: () {
                 (widget.game as DoodleDash).togglePauseState();
-                setState(() {
-                  isPaused = !isPaused;
-                });
+                setState(
+                  () {
+                    isPaused = !isPaused;
+                  },
+                );
               },
             ),
           ),

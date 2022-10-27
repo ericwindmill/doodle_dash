@@ -20,23 +20,23 @@ class _MainMenuOverlayState extends State<MainMenuOverlay> {
   @override
   Widget build(BuildContext context) {
     return Material(
-      child: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            Text(
-              'Doodle Dash!',
-              style: Theme.of(context).textTheme.displaySmall,
-            ),
-            const WhiteSpace(),
-            Text(
-              'Select character',
-              style: Theme.of(context).textTheme.headlineMedium,
-            ),
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Row(
+      child: Padding(
+        padding: const EdgeInsets.all(24.0),
+        child: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Text(
+                'Doodle Dash!',
+                style: Theme.of(context).textTheme.displaySmall,
+              ),
+              const WhiteSpace(),
+              Text(
+                'Select character',
+                style: Theme.of(context).textTheme.headlineMedium,
+              ),
+              Row(
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: [
                   OutlinedButton(
@@ -63,8 +63,8 @@ class _MainMenuOverlayState extends State<MainMenuOverlay> {
                       padding: const EdgeInsets.all(24.0),
                       child: Image.asset(
                         'images/game/left_dash.png',
-                        height: 150,
-                        width: 150,
+                        height: 125,
+                        width: 125,
                       ),
                     ),
                   ),
@@ -92,34 +92,56 @@ class _MainMenuOverlayState extends State<MainMenuOverlay> {
                       padding: const EdgeInsets.all(24.0),
                       child: Image.asset(
                         'images/game/right_sparky.png',
-                        height: 150,
-                        width: 150,
+                        height: 125,
+                        width: 125,
                       ),
                     ),
                   ),
                 ],
               ),
-            ),
-            const WhiteSpace(),
-            Center(
-              child: ElevatedButton(
-                onPressed: (character != null)
-                    ? () async {
-                        (widget.game as DoodleDash).selectCharacter(character!);
-                        (widget.game as DoodleDash).startGame();
-                      }
-                    : null,
-                style: ButtonStyle(
-                  minimumSize: MaterialStateProperty.all(
-                    const Size(100, 50),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text('Difficulty:'),
+                  Expanded(
+                    child: Slider(
+                      value: (widget.game as DoodleDash).level.toDouble(),
+                      max: 5,
+                      min: 1,
+                      divisions: 4,
+                      label: 'Difficulty',
+                      onChanged: ((value) {
+                        setState(() {
+                          (widget.game as DoodleDash)
+                              .selectDifficulty(value.toInt());
+                        });
+                      }),
+                    ),
                   ),
-                  textStyle: MaterialStateProperty.all(
-                      Theme.of(context).textTheme.titleLarge),
-                ),
-                child: const Text('Start'),
+                ],
               ),
-            ),
-          ],
+              const WhiteSpace(),
+              Center(
+                child: ElevatedButton(
+                  onPressed: (character != null)
+                      ? () async {
+                          (widget.game as DoodleDash)
+                              .selectCharacter(character!);
+                          (widget.game as DoodleDash).startGame();
+                        }
+                      : null,
+                  style: ButtonStyle(
+                    minimumSize: MaterialStateProperty.all(
+                      const Size(100, 50),
+                    ),
+                    textStyle: MaterialStateProperty.all(
+                        Theme.of(context).textTheme.titleLarge),
+                  ),
+                  child: const Text('Start'),
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
