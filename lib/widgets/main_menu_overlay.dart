@@ -20,6 +20,9 @@ class _MainMenuOverlayState extends State<MainMenuOverlay> {
 
   @override
   Widget build(BuildContext context) {
+    final screenSize = MediaQuery.of(context).size;
+    final characterWidth = screenSize.width / 3.5;
+
     return Material(
       color: Palette.background,
       child: Padding(
@@ -77,8 +80,8 @@ class _MainMenuOverlayState extends State<MainMenuOverlay> {
                       padding: const EdgeInsets.all(24.0),
                       child: Image.asset(
                         'images/game/left_dash.png',
-                        height: 125,
-                        width: 125,
+                        height: characterWidth,
+                        width: characterWidth,
                       ),
                     ),
                   ),
@@ -109,8 +112,8 @@ class _MainMenuOverlayState extends State<MainMenuOverlay> {
                       padding: const EdgeInsets.all(24.0),
                       child: Image.asset(
                         'images/game/right_sparky.png',
-                        height: 125,
-                        width: 125,
+                        height: characterWidth,
+                        width: characterWidth,
                       ),
                     ),
                   ),
