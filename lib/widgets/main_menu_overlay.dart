@@ -36,8 +36,9 @@ class _MainMenuOverlayState extends State<MainMenuOverlay> {
                 'Doodle Dash',
                 style: Theme.of(context)
                     .textTheme
-                    .displaySmall!
-                    .copyWith(color: Palette.lightText),
+                    .displayLarge!
+                    .copyWith(color: Palette.lightText, height: .8),
+                textAlign: TextAlign.center,
               ),
               const WhiteSpace(),
               Align(
@@ -178,12 +179,14 @@ class _MainMenuOverlayState extends State<MainMenuOverlay> {
 }
 
 class WhiteSpace extends StatelessWidget {
-  const WhiteSpace({super.key});
+  const WhiteSpace({super.key, this.height = 100});
+
+  final double height;
 
   @override
   Widget build(BuildContext context) {
-    return const SizedBox(
-      height: 100,
+    return SizedBox(
+      height: height,
     );
   }
 }

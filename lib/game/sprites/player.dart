@@ -27,7 +27,7 @@ class Player extends SpriteGroupComponent<PlayerDirection>
 
   // used to calculate the horizontal movement speed
   final double _moveSpeed = 400; // horizontal travel speed
-  final double _gravity = 7; // acceleration pulling Dash down
+  final double _gravity = 9; // acceleration pulling Dash down
   double _jumpSpeed = 600; // vertical travel speed
 
   @override
