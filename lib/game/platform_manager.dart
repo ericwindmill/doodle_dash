@@ -4,6 +4,7 @@ import 'package:flame/components.dart';
 
 import '../util/range.dart';
 import 'doodle_dash.dart';
+import 'sprites/enemy.dart';
 import 'sprites/platform.dart';
 
 class Difficulty {
@@ -82,7 +83,7 @@ class PlatformManager extends Component with HasGameRef<DoodleDash> {
 
     // Generate 30 Platforms at random x, y positions and add to list of platforms
     // to be populated in the game.
-    for (var i = 0; i < 29; i++) {
+    for (var i = 0; i < 9; i++) {
       if (i != 0) {
         currentX = _generateNextX();
         currentY = _generateNextY();
@@ -143,7 +144,8 @@ class PlatformManager extends Component with HasGameRef<DoodleDash> {
     final distanceToNextY = minVerticalDistanceToNextPlatform.toInt() +
         random
             .nextInt((maxVerticalDistanceToNextPlatform -
-                    minVerticalDistanceToNextPlatform)
+                    minVerticalDistanceToNextPlatform -
+                    100)
                 .floor())
             .toDouble();
 
@@ -185,7 +187,28 @@ class PlatformManager extends Component with HasGameRef<DoodleDash> {
       final springPlat =
           SpringBoard(position: Vector2(_generateNextX(), _generateNextY()));
       add(springPlat);
+
+      // Generate Trashcan
+      if (_shouldGenerateEntity()) {
+        final trashcan = Trashcan(
+            position: Vector2(
+          _generateNextX(),
+          _generateNextY(),
+        ));
+        add(trashcan);
+      }
     }
     super.update(dt);
+  }
+
+  // Returns true X % of the time, and false 100-X% of the time.
+  bool _shouldGenerateEntity({int percentLikely = 30}) {
+    final randNum = random.nextInt(100);
+
+    // if randNum is greater than percent likely
+    // Example:
+    //  randNum = 52, percentLikely = 30
+    //  return 52 > 70 (false)
+    return randNum > (100 - percentLikely);
   }
 }

@@ -45,7 +45,7 @@ class Player extends SpriteGroupComponent<PlayerDirection>
 
   @override
   void update(double dt) {
-    if (gameRef.isIntro) return;
+    if (gameRef.isIntro || gameRef.isGameOver) return;
 
     _velocity.x = _hAxisInput * _moveSpeed; // Dash's horizontal velocity
     _velocity.y +=
