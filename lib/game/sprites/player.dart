@@ -114,6 +114,9 @@ class Player extends SpriteGroupComponent<PlayerDirection>
       // TODO (sprint 3): Add collision behavior for power-ups
     } else if (other is SpringBoard) {
       jump(specialJumpSpeed: _jumpSpeed * 2);
+    } else if (other is BrokenPlatform &&
+        other.current == BrokenPlatformState.cracked) {
+      jump();
     }
 
     super.onCollision(intersectionPoints, other);

@@ -58,10 +58,8 @@ class PlatformManager extends Component with HasGameRef<DoodleDash> {
       case 0:
         return GrassPlatform(position: position);
       case 1:
-        return SandPlatform(position: position);
+        return MovingPlatform(position: position);
       case 2:
-        return StonePlatform(position: position);
-      case 3:
         return Platform(position: position);
       default:
         return Platform(position: position);
@@ -182,11 +180,18 @@ class PlatformManager extends Component with HasGameRef<DoodleDash> {
       // It's the simplest way to do it
       gameRef.score.value++;
 
+      // TODO: Configure these percentages
       // TODO (future episode): Add additional power up code here
       if (_shouldGenerateEntity()) {
         final springPlat =
             SpringBoard(position: Vector2(_generateNextX(), _generateNextY()));
         add(springPlat);
+      }
+
+      if (_shouldGenerateEntity()) {
+        final brokenPlatform = BrokenPlatform(
+            position: Vector2(_generateNextX(), _generateNextY()));
+        add(brokenPlatform);
       }
 
       // Enemies

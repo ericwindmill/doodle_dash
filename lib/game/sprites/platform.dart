@@ -1,4 +1,6 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
+import 'dart:math';
+
 import 'package:flame/collisions.dart';
 import 'package:flame/components.dart';
 
@@ -36,23 +38,82 @@ class GrassPlatform extends Platform {
   }
 }
 
-class SandPlatform extends Platform {
-  SandPlatform({super.position});
+class MovingPlatform extends Platform {
+  MovingPlatform({super.position});
+
+  Vector2 _velocity = Vector2.zero();
+  double direction = 1;
+  double speed = 35;
+  Random random = Random();
 
   @override
   Future<void>? onLoad() async {
     await super.onLoad();
     sprite = await gameRef.loadSprite('game/sand_platform.png');
+
+    final List<double> directions = [-1, 1];
+    direction = directions[random.nextInt(2)];
+
+    speed = random.nextInt(50) + 20;
+  }
+
+  @override
+  void update(double dt) {
+    final double gameWidth = gameRef.size.x;
+
+    if (position.x <= 0) {
+      direction = 1;
+    } else if (position.x >= gameWidth - size.x) {
+      direction = -1;
+    }
+
+    _velocity.x = direction * speed;
+
+    position += _velocity * dt;
   }
 }
 
-class StonePlatform extends Platform {
-  StonePlatform({super.position});
+enum BrokenPlatformState { cracked, broken }
+
+class BrokenPlatform extends SpriteGroupComponent<BrokenPlatformState>
+    with HasGameRef<DoodleDash>, CollisionCallbacks {
+  BrokenPlatform({super.position})
+      : super(
+          size: Vector2.all(50),
+          priority: 2, // Ensures platform is always behind Dash
+        );
+
+  final hitbox = RectangleHitbox();
 
   @override
   Future<void>? onLoad() async {
     await super.onLoad();
-    sprite = await gameRef.loadSprite('game/stone_platform.png');
+
+    // Load & configure sprite assets
+    final cracked = await gameRef.loadSprite('game/cracked_stone_platform.png');
+    final broken = await gameRef.loadSprite('game/broken_stone_platform.png');
+
+    sprites = <BrokenPlatformState, Sprite>{
+      BrokenPlatformState.cracked: cracked,
+      BrokenPlatformState.broken: broken,
+    };
+
+    current = BrokenPlatformState.cracked;
+
+    // Add collision detection logic
+    await add(hitbox);
+  }
+
+  @override
+  void onCollisionStart(
+      Set<Vector2> intersectionPoints, PositionComponent other) {}
+
+  @override
+  void onCollisionEnd(PositionComponent other) {
+    super.onCollisionEnd(other);
+
+    current = BrokenPlatformState.broken;
+    //remove(hitbox);
   }
 }
 
