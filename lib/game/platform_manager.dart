@@ -182,12 +182,14 @@ class PlatformManager extends Component with HasGameRef<DoodleDash> {
       // It's the simplest way to do it
       gameRef.score.value++;
 
-      // TODO (Khanh): Randomize when a random platform might show up, 30% probability
       // TODO (future episode): Add additional power up code here
-      final springPlat =
-          SpringBoard(position: Vector2(_generateNextX(), _generateNextY()));
-      add(springPlat);
+      if (_shouldGenerateEntity()) {
+        final springPlat =
+            SpringBoard(position: Vector2(_generateNextX(), _generateNextY()));
+        add(springPlat);
+      }
 
+      // Enemies
       // Generate Trashcan
       if (_shouldGenerateEntity()) {
         final trashcan = Trashcan(

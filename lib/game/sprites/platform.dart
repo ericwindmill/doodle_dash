@@ -96,4 +96,11 @@ class SpringBoard extends SpriteGroupComponent<SpringState>
 
     current = SpringState.down;
   }
+
+  @override
+  void onCollisionEnd(PositionComponent other) {
+    super.onCollisionEnd(other);
+
+    current = SpringState.up;
+  }
 }
