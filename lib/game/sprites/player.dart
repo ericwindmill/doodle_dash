@@ -8,7 +8,7 @@ import '../doodle_dash.dart';
 import 'platform.dart';
 import 'powerup.dart';
 
-enum PlayerCharacter { left, right, center, jetpack }
+enum PlayerCharacter { left, right, center, jetpack, noogler }
 
 class Player extends SpriteGroupComponent<PlayerCharacter>
     with HasGameRef<DoodleDash>, KeyboardHandler, CollisionCallbacks {
@@ -100,8 +100,8 @@ class Player extends SpriteGroupComponent<PlayerCharacter>
 
   bool get isMovingDown => _velocity.y > 0;
 
-  // add an OR noogler hat at once that state has been added
-  bool get isInvincible => current == PlayerCharacter.jetpack;
+  bool get isInvincible =>
+      current == PlayerCharacter.jetpack || current == PlayerCharacter.noogler;
 
   // Callback for Dash colliding with another component in the game
   @override
@@ -117,7 +117,8 @@ class Player extends SpriteGroupComponent<PlayerCharacter>
 
     // Only want Dash to  “jump” when she is falling + collides with the top of a platform
     if (isMovingDown && isCollidingVertically) {
-      if (current == PlayerCharacter.jetpack) {
+      if (current == PlayerCharacter.jetpack ||
+          current == PlayerCharacter.noogler) {
         current = PlayerCharacter.center;
       }
 
@@ -130,13 +131,17 @@ class Player extends SpriteGroupComponent<PlayerCharacter>
         jump();
         other.breakPlatform();
       }
-
-      // TODO (sprint 3): Add collision behavior for power-ups
     }
 
-    if (other is Jetpack) {
-      current = PlayerCharacter.jetpack;
-      jump(specialJumpSpeed: _jumpSpeed * 3.5);
+    // Power-Ups
+    if (!isInvincible) {
+      if (other is Jetpack) {
+        current = PlayerCharacter.jetpack;
+        jump(specialJumpSpeed: _jumpSpeed * 3.5);
+      } else if (other is NooglerHat) {
+        current = PlayerCharacter.noogler;
+        jump(specialJumpSpeed: _jumpSpeed * 4);
+      }
     }
 
     super.onCollision(intersectionPoints, other);
@@ -163,11 +168,15 @@ class Player extends SpriteGroupComponent<PlayerCharacter>
     final center = await gameRef.loadSprite('game/left_${character.name}.png');
     final jetpack =
         await gameRef.loadSprite('game/jetpack_${character.name}.png');
+    final noogler =
+        await gameRef.loadSprite('game/noogler_${character.name}.png');
+
     sprites = <PlayerCharacter, Sprite>{
       PlayerCharacter.left: left,
       PlayerCharacter.right: right,
       PlayerCharacter.center: center,
       PlayerCharacter.jetpack: jetpack,
+      PlayerCharacter.noogler: noogler,
     };
   }
 }

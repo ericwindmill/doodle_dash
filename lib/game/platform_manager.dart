@@ -199,6 +199,12 @@ class PlatformManager extends Component with HasGameRef<DoodleDash> {
         add(jetpack);
       }
 
+      if (_shouldGenerateEntity()) {
+        final nooglerHat =
+            NooglerHat(position: Vector2(_generateNextX(), _generateNextY()));
+        add(nooglerHat);
+      }
+
       // Enemies
       // Generate Trashcan
       if (_shouldGenerateEntity()) {

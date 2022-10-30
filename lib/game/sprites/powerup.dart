@@ -5,11 +5,11 @@ import 'package:flame/components.dart';
 
 import '../doodle_dash.dart';
 
-class Jetpack extends SpriteComponent
+class PowerUp extends SpriteComponent
     with HasGameRef<DoodleDash>, CollisionCallbacks {
   final hitbox = RectangleHitbox();
 
-  Jetpack({
+  PowerUp({
     super.position,
   }) : super(
           size: Vector2.all(50),
@@ -19,9 +19,32 @@ class Jetpack extends SpriteComponent
   @override
   Future<void>? onLoad() async {
     await super.onLoad();
-    sprite = await gameRef.loadSprite('game/torchLit.png');
-
-    // Add collision detection logic
+    // collision detection logic
     await add(hitbox);
+  }
+}
+
+class Jetpack extends PowerUp {
+  Jetpack({
+    super.position,
+  });
+
+  @override
+  Future<void>? onLoad() async {
+    await super.onLoad();
+    sprite = await gameRef.loadSprite('game/torchLit.png');
+  }
+}
+
+class NooglerHat extends PowerUp {
+  NooglerHat({
+    super.position,
+  });
+
+  @override
+  Future<void>? onLoad() async {
+    await super.onLoad();
+    sprite = await gameRef.loadSprite('game/noogler_hat.png');
+    size = Vector2(50, 30);
   }
 }
