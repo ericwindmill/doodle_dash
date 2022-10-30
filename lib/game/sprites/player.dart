@@ -6,10 +6,11 @@ import 'package:flutter/services.dart';
 
 import '../doodle_dash.dart';
 import 'platform.dart';
+import 'powerup.dart';
 
-enum PlayerDirection { left, right, center }
+enum PlayerCharacter { left, right, center, jetpack }
 
-class Player extends SpriteGroupComponent<PlayerDirection>
+class Player extends SpriteGroupComponent<PlayerCharacter>
     with HasGameRef<DoodleDash>, KeyboardHandler, CollisionCallbacks {
   Player({super.position, required this.character})
       : super(
@@ -40,7 +41,7 @@ class Player extends SpriteGroupComponent<PlayerDirection>
     await _loadCharacterSprites();
 
     // arbitrarily start with Dash facing right
-    current = PlayerDirection.center;
+    current = PlayerCharacter.center;
   }
 
   @override
@@ -67,6 +68,7 @@ class Player extends SpriteGroupComponent<PlayerDirection>
 
   void reset() {
     _velocity = Vector2.zero();
+    current = PlayerCharacter.center;
   }
 
   // When arrow keys are pressed, change Dash's travel direction + sprite
@@ -75,12 +77,16 @@ class Player extends SpriteGroupComponent<PlayerDirection>
     _hAxisInput = 0;
 
     if (keysPressed.contains(LogicalKeyboardKey.arrowLeft)) {
-      current = PlayerDirection.left;
+      if (current != PlayerCharacter.jetpack) {
+        current = PlayerCharacter.left;
+      }
       _hAxisInput += -1;
     }
 
     if (keysPressed.contains(LogicalKeyboardKey.arrowRight)) {
-      current = PlayerDirection.right;
+      if (current != PlayerCharacter.jetpack) {
+        current = PlayerCharacter.right;
+      }
       _hAxisInput += 1;
     }
 
@@ -94,29 +100,43 @@ class Player extends SpriteGroupComponent<PlayerDirection>
 
   bool get isMovingDown => _velocity.y > 0;
 
+  // add an OR noogler hat at once that state has been added
+  bool get isInvincible => current == PlayerCharacter.jetpack;
+
   // Callback for Dash colliding with another component in the game
   @override
   void onCollisionStart(
       Set<Vector2> intersectionPoints, PositionComponent other) {
     super.onCollisionStart(intersectionPoints, other);
-    if (other is Platform) {
-      // Check if Dash is moving down and collides with a platform from the top
-      // this allows Dash to move up _through_ platforms without collision
-      bool isMovingDown = _velocity.y > 0;
-      bool isCollidingVertically =
-          (intersectionPoints.first.y - intersectionPoints.last.y).abs() < 5;
 
-      // Only want Dash to  “jump” when she is falling + collides with the top of a platform
-      if (isMovingDown && isCollidingVertically) {
+    // Check if Dash is moving down and collides with a platform from the top
+    // this allows Dash to move up _through_ platforms without collision
+    bool isMovingDown = _velocity.y > 0;
+    bool isCollidingVertically =
+        (intersectionPoints.first.y - intersectionPoints.last.y).abs() < 5;
+
+    // Only want Dash to  “jump” when she is falling + collides with the top of a platform
+    if (isMovingDown && isCollidingVertically) {
+      if (current == PlayerCharacter.jetpack) {
+        current = PlayerCharacter.center;
+      }
+
+      if (other is Platform) {
         jump();
+      } else if (other is SpringBoard) {
+        jump(specialJumpSpeed: _jumpSpeed * 2);
+      } else if (other is BrokenPlatform &&
+          other.current == BrokenPlatformState.cracked) {
+        jump();
+        other.breakPlatform();
       }
 
       // TODO (sprint 3): Add collision behavior for power-ups
-    } else if (other is SpringBoard) {
-      jump(specialJumpSpeed: _jumpSpeed * 2);
-    } else if (other is BrokenPlatform &&
-        other.current == BrokenPlatformState.cracked) {
-      jump();
+    }
+
+    if (other is Jetpack) {
+      current = PlayerCharacter.jetpack;
+      jump(specialJumpSpeed: _jumpSpeed * 3.5);
     }
 
     super.onCollision(intersectionPoints, other);
@@ -141,10 +161,13 @@ class Player extends SpriteGroupComponent<PlayerDirection>
     final left = await gameRef.loadSprite('game/left_${character.name}.png');
     final right = await gameRef.loadSprite('game/right_${character.name}.png');
     final center = await gameRef.loadSprite('game/left_${character.name}.png');
-    sprites = <PlayerDirection, Sprite>{
-      PlayerDirection.left: left,
-      PlayerDirection.right: right,
-      PlayerDirection.center: center,
+    final jetpack =
+        await gameRef.loadSprite('game/jetpack_${character.name}.png');
+    sprites = <PlayerCharacter, Sprite>{
+      PlayerCharacter.left: left,
+      PlayerCharacter.right: right,
+      PlayerCharacter.center: center,
+      PlayerCharacter.jetpack: jetpack,
     };
   }
 }

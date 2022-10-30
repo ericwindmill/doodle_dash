@@ -104,16 +104,19 @@ class BrokenPlatform extends SpriteGroupComponent<BrokenPlatformState>
     await add(hitbox);
   }
 
+  void breakPlatform() {
+    current = BrokenPlatformState.broken;
+  }
+
   @override
   void onCollisionStart(
-      Set<Vector2> intersectionPoints, PositionComponent other) {}
+      Set<Vector2> intersectionPoints, PositionComponent other) {
+    super.onCollisionStart(intersectionPoints, other);
+  }
 
   @override
   void onCollisionEnd(PositionComponent other) {
     super.onCollisionEnd(other);
-
-    current = BrokenPlatformState.broken;
-    //remove(hitbox);
   }
 }
 

@@ -4,8 +4,7 @@ import 'package:flame/components.dart';
 
 import '../util/range.dart';
 import 'doodle_dash.dart';
-import 'sprites/enemy.dart';
-import 'sprites/platform.dart';
+import 'sprites/sprites.dart';
 
 class Difficulty {
   double minHeight;
@@ -192,6 +191,12 @@ class PlatformManager extends Component with HasGameRef<DoodleDash> {
         final brokenPlatform = BrokenPlatform(
             position: Vector2(_generateNextX(), _generateNextY()));
         add(brokenPlatform);
+      }
+
+      if (_shouldGenerateEntity()) {
+        final jetpack =
+            Jetpack(position: Vector2(_generateNextX(), _generateNextY()));
+        add(jetpack);
       }
 
       // Enemies
