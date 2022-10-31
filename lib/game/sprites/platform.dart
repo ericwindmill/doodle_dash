@@ -6,7 +6,7 @@ import 'package:flame/components.dart';
 
 import '../doodle_dash.dart';
 
-class Platform extends SpriteComponent
+abstract class Platform<T> extends SpriteGroupComponent<T>
     with HasGameRef<DoodleDash>, CollisionCallbacks {
   final hitbox = RectangleHitbox();
 
@@ -20,25 +20,32 @@ class Platform extends SpriteComponent
   @override
   Future<void>? onLoad() async {
     await super.onLoad();
-    sprite = await gameRef.loadSprite('game/yellow_platform.png');
 
     // Add collision detection logic
     await add(hitbox);
   }
 }
-// TODO (ep 3): Rename Platforms for correct assets
 
-class GrassPlatform extends Platform {
-  GrassPlatform({super.position});
+enum NormalPlatformState { only }
+
+class NormalPlatform extends Platform<NormalPlatformState> {
+  NormalPlatform({super.position});
 
   @override
   Future<void>? onLoad() async {
+    sprites = {
+      NormalPlatformState.only:
+          await gameRef.loadSprite('game/grass_platform.png')
+    };
+
+    current = NormalPlatformState.only;
     await super.onLoad();
-    sprite = await gameRef.loadSprite('game/grass_platform.png');
   }
 }
 
-class MovingPlatform extends Platform {
+enum MovingPlatformState { only }
+
+class MovingPlatform extends Platform<MovingPlatformState> {
   MovingPlatform({super.position});
 
   Vector2 _velocity = Vector2.zero();
@@ -48,13 +55,18 @@ class MovingPlatform extends Platform {
 
   @override
   Future<void>? onLoad() async {
-    await super.onLoad();
-    sprite = await gameRef.loadSprite('game/sand_platform.png');
+    sprites = {
+      MovingPlatformState.only:
+          await gameRef.loadSprite('game/sand_platform.png')
+    };
+
+    current = MovingPlatformState.only;
 
     final List<double> directions = [-1, 1];
     direction = directions[random.nextInt(2)];
 
     speed = random.nextInt(50) + 20;
+    await super.onLoad();
   }
 
   @override
@@ -75,33 +87,21 @@ class MovingPlatform extends Platform {
 
 enum BrokenPlatformState { cracked, broken }
 
-class BrokenPlatform extends SpriteGroupComponent<BrokenPlatformState>
-    with HasGameRef<DoodleDash>, CollisionCallbacks {
-  BrokenPlatform({super.position})
-      : super(
-          size: Vector2.all(50),
-          priority: 2, // Ensures platform is always behind Dash
-        );
-
-  final hitbox = RectangleHitbox();
+class BrokenPlatform extends Platform<BrokenPlatformState> {
+  BrokenPlatform({super.position});
 
   @override
   Future<void>? onLoad() async {
     await super.onLoad();
 
-    // Load & configure sprite assets
-    final cracked = await gameRef.loadSprite('game/cracked_stone_platform.png');
-    final broken = await gameRef.loadSprite('game/broken_stone_platform.png');
-
     sprites = <BrokenPlatformState, Sprite>{
-      BrokenPlatformState.cracked: cracked,
-      BrokenPlatformState.broken: broken,
+      BrokenPlatformState.cracked:
+          await gameRef.loadSprite('game/cracked_stone_platform.png'),
+      BrokenPlatformState.broken:
+          await gameRef.loadSprite('game/broken_stone_platform.png'),
     };
 
     current = BrokenPlatformState.cracked;
-
-    // Add collision detection logic
-    await add(hitbox);
   }
 
   void breakPlatform() {
@@ -123,34 +123,21 @@ class BrokenPlatform extends SpriteGroupComponent<BrokenPlatformState>
 enum SpringState { down, up }
 
 // Once we have other component assets, they can be built in similar manner
-class SpringBoard extends SpriteGroupComponent<SpringState>
-    with HasGameRef<DoodleDash>, CollisionCallbacks {
-  final hitbox = RectangleHitbox();
-
+class SpringBoard extends Platform<SpringState> {
   SpringBoard({
     super.position,
-  }) : super(
-          size: Vector2.all(50),
-          priority: 2, // Ensures platform is always behind Dash
-        );
+  });
 
   @override
   Future<void>? onLoad() async {
     await super.onLoad();
 
-    // Load & configure sprite assets
-    final springDown = await gameRef.loadSprite('game/springboardDown.png');
-    final springUp = await gameRef.loadSprite('game/springboardUp.png');
-
     sprites = <SpringState, Sprite>{
-      SpringState.down: springDown,
-      SpringState.up: springUp,
+      SpringState.down: await gameRef.loadSprite('game/springboardDown.png'),
+      SpringState.up: await gameRef.loadSprite('game/springboardUp.png'),
     };
 
     current = SpringState.up;
-
-    // Add collision detection logic
-    await add(hitbox);
   }
 
   @override

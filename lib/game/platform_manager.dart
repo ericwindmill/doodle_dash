@@ -2,91 +2,51 @@ import 'dart:math';
 
 import 'package:flame/components.dart';
 
-import '../util/range.dart';
+import '../util/difficulty_util.dart';
+import '../util/num_utils.dart';
 import 'doodle_dash.dart';
-import 'sprites/sprites.dart';
+import 'sprites/enemy.dart';
+import 'sprites/platform.dart';
+import 'sprites/powerup.dart';
 
-class Difficulty {
-  double minHeight;
-  double maxHeight;
-  double jumpSpeed;
+final Random _rand = Random();
 
-  Difficulty(
-      {required this.minHeight,
-      required this.maxHeight,
-      required this.jumpSpeed});
-}
+class ObjectManager extends Component with HasGameRef<DoodleDash> {
+  ObjectManager({
+    this.minVerticalDistanceToNextPlatform = 200,
+    this.maxVerticalDistanceToNextPlatform = 400,
+    this.difficultyMultiplier = 1,
+  });
 
-// Configurations for different levels of difficulty,
-//the higher level the further away Dash may need to jump. Since
-// gravity is constant, jumpSpeed needs to accomodate for further distance.
-final Map<int, Difficulty> levels = {
-  1: Difficulty(minHeight: 200, maxHeight: 400, jumpSpeed: 600),
-  2: Difficulty(minHeight: 200, maxHeight: 500, jumpSpeed: 650),
-  3: Difficulty(minHeight: 200, maxHeight: 600, jumpSpeed: 700),
-  4: Difficulty(minHeight: 200, maxHeight: 700, jumpSpeed: 750),
-  5: Difficulty(minHeight: 200, maxHeight: 800, jumpSpeed: 800),
-};
-
-// Spawns the platforms for the game
-class PlatformManager extends Component with HasGameRef<DoodleDash> {
-  PlatformManager({this.level = 1});
-
-  int level = 1;
-  final Random random = Random();
-  final List<Platform> platforms = [];
-  double maxVerticalDistanceToNextPlatform = 1000;
-  double platformHeight = 50;
-
-  double minVerticalDistanceToNextPlatform = 200;
-
-  void setLevel(int newLevel) {
-    Difficulty? difficulty = levels[newLevel];
-
-    if (difficulty == null) return;
-
-    level = newLevel;
-
-    minVerticalDistanceToNextPlatform = difficulty.minHeight;
-    maxVerticalDistanceToNextPlatform = difficulty.maxHeight;
-    gameRef.player.setJumpSpeed(difficulty.jumpSpeed);
-  }
-
-  Platform randomPlatform(Vector2 position) {
-    switch (random.nextInt(3)) {
-      case 0:
-        return GrassPlatform(position: position);
-      case 1:
-        return MovingPlatform(position: position);
-      case 2:
-        return Platform(position: position);
-      default:
-        return Platform(position: position);
-    }
-  }
+  double minVerticalDistanceToNextPlatform;
+  double maxVerticalDistanceToNextPlatform;
+  int difficultyMultiplier;
+  final List<Platform> _platforms = [];
+  final List<PowerUp> _powerups = [];
+  final List<Enemy> _enemies = [];
+  final double _tallestPlatformHeight = 50;
 
   @override
   void onMount() {
     super.onMount();
 
-    // TODO (future episode): Ask user what level and set it here
-    setLevel(level);
-
-    // Position Dash in the middle
+    // The X that will be used for the next platform.
+    // The initial X is the middle of the screen.
     var currentX = (gameRef.size.x.floor() / 2).toDouble() - 50;
+
     // The first platform will always be in the bottom third of the initial screen
     var currentY =
-        gameRef.size.y - (random.nextInt(gameRef.size.y.floor()) / 3) - 50;
+        gameRef.size.y - (_rand.nextInt(gameRef.size.y.floor()) / 3) - 50;
 
-    // Generate 30 Platforms at random x, y positions and add to list of platforms
+    // Generate 10 Platforms at random x, y positions and add to list of platforms
     // to be populated in the game.
     for (var i = 0; i < 9; i++) {
       if (i != 0) {
         currentX = _generateNextX();
         currentY = _generateNextY();
       }
-      platforms.add(
-        randomPlatform(
+      _platforms.add(
+        _semiRandomPlatform(
           Vector2(
             currentX,
             currentY,
@@ -94,22 +54,62 @@ class PlatformManager extends Component with HasGameRef<DoodleDash> {
         ),
       );
 
-      // Future proofing. Make sure that the platform height is always
-      // equal to the height of the tallest platform.
-      if (platformHeight < platforms[i].size.y) {
-        platformHeight = platforms.first.size.y;
-      }
-
-      add(platforms[i]);
+      // Add Component to Flame tree
+      add(_platforms[i]);
     }
   }
 
+  @override
+  void update(double dt) {
+    // Adding Platform Height will ensure that 2 platforms don't overlap.
+    final topOfLowestPlatform =
+        _platforms.first.position.y + _tallestPlatformHeight;
+
+    final screenBottom = gameRef.player.position.y +
+        (gameRef.size.x / 2) +
+        gameRef.screenBufferSpace;
+
+    // When the lowest platform is offscreen, it can be removed and a new platform
+    // should be added
+    if (topOfLowestPlatform > screenBottom) {
+      // Generate and add the next platform to the game
+      var newPlatY = _generateNextY();
+      var newPlatX = _generateNextX();
+      final nextPlat = _semiRandomPlatform(Vector2(newPlatX, newPlatY));
+      add(nextPlat);
+
+      _platforms.add(nextPlat);
+      // remove the lowest platform
+
+      // Remove platforms that have gone out of view
+      final lowestPlat = _platforms.removeAt(0);
+      // remove component from game
+      lowestPlat.removeFromParent();
+      // increase score whenever "Dash passes a platform"
+      // Really, increase score when a platform passes off the screen
+      // It's the simplest way to do it
+      gameRef.score.value++;
+
+      _maybeAddPowerup();
+      _maybeAddEnemy();
+    }
+
+    super.update(dt);
+  }
+
+  // Exposes a way for the DoodleDash component to increase difficulty mid-game
+  void increaseDifficulty(int nextLevel) {
+    difficultyMultiplier = nextLevel;
+    minVerticalDistanceToNextPlatform = levels[nextLevel]!.minDistance;
+    maxVerticalDistanceToNextPlatform = levels[nextLevel]!.maxDistance;
+  }
+
   double _generateNextX() {
-    final platformWidth = platforms.last.size.x;
+    final platformWidth = _platforms.last.size.x;
     // Used to ensure that the next platform doesn't overlap
     final previousPlatformXRange = Range(
-      platforms.last.position.x,
-      platforms.last.position.x + platformWidth,
+      _platforms.last.position.x,
+      _platforms.last.position.x + platformWidth,
     );
 
     // -50 (width of platform) ensures the platform doesn't populate outside
@@ -121,7 +121,7 @@ class PlatformManager extends Component with HasGameRef<DoodleDash> {
     // If the previous platform and next overlap, try a new random X
     do {
       nextPlatformAnchorX =
-          random.nextInt(gameRef.size.x.floor() - 50).toDouble();
+          _rand.nextInt(gameRef.size.x.floor() - 50).toDouble();
     } while (previousPlatformXRange.overlaps(
         Range(nextPlatformAnchorX, nextPlatformAnchorX + platformWidth)));
 
@@ -134,99 +134,102 @@ class PlatformManager extends Component with HasGameRef<DoodleDash> {
   // that distance above the current highest platform
   double _generateNextY() {
     // Adding platformHeight prevents platforms from overlapping.
-    final currentHighestPlatformY = platforms.last.center.y + platformHeight;
+    final currentHighestPlatformY =
+        _platforms.last.center.y + _tallestPlatformHeight;
 
-    // TODO (Khanh): Switch to difficulty level logic,
-    // increase level of difficulty every 20 or so platforms
     final distanceToNextY = minVerticalDistanceToNextPlatform.toInt() +
-        random
+        _rand
             .nextInt((maxVerticalDistanceToNextPlatform -
-                    minVerticalDistanceToNextPlatform -
-                    100)
+                    minVerticalDistanceToNextPlatform)
                 .floor())
             .toDouble();
 
     return currentHighestPlatformY - distanceToNextY;
   }
 
-  @override
-  void update(double dt) {
-    // Adding Platform Height will ensure that 2 platforms don't overlap.
-    final topOfLowestPlatform = platforms.first.position.y + platformHeight;
+  // Return a platform.
+  // The percent chance of any given platform is NOT equal
+  Platform _semiRandomPlatform(Vector2 position) {
+    // Get a number from 1 to 100 (incl)
+    var nextInt = _rand.nextInt(100) + 1;
 
+    if (nextInt.between(1, 25)) {
+      return NormalPlatform(position: position);
+    }
+
+    if (nextInt.between(25, 50)) {
+      return NormalPlatform(position: position);
+    }
+
+    if (nextInt.between(50, 70)) {
+      return BrokenPlatform(position: position);
+    }
+
+    if (nextInt.between(70, 85)) {
+      return MovingPlatform(position: position);
+    }
+
+    if (nextInt.between(85, 100)) {
+      return SpringBoard(position: position);
+    }
+
+    return NormalPlatform(position: position);
+  }
+
+  void _maybeAddPowerup() {
+    var nextInt = _rand.nextInt(100);
+
+    // there is a 15% chance to add a Noogler Hat
+    if (nextInt.between(70, 85)) {
+      // generate powerup
+      var nooglerHat = NooglerHat(
+        position: Vector2(_generateNextX(), _generateNextY()),
+      );
+      add(nooglerHat);
+      _powerups.add(nooglerHat);
+    }
+
+    // There is a 15% chance to add a jetpack
+    if (nextInt.between(85, 100)) {
+      var jetpack = Jetpack(
+        position: Vector2(_generateNextX(), _generateNextY()),
+      );
+      add(jetpack);
+      _powerups.add(jetpack);
+    }
+  }
+
+  void _maybeAddEnemy() {
+    // There will be 5 - 25% added to the probabilibity based on the current
+    // difficulty.
+    var basePercentageAddedFromDifficulty = difficultyMultiplier * 5;
+    var nextInt = _rand.nextInt(100) + basePercentageAddedFromDifficulty;
+    if (nextInt > 75) {
+      var trashcan = Enemy(
+        position: Vector2(_generateNextX(), _generateNextY()),
+      );
+      add(trashcan);
+      _enemies.add(trashcan);
+      _cleanup();
+    }
+  }
+
+  // Because powerups and enemies rely on probability to be generated
+  // There is no exact best moment to remove them from the game
+  // So, we periodically check if there are any that can be removed.
+  void _cleanup() {
     final screenBottom = gameRef.player.position.y +
         (gameRef.size.x / 2) +
         gameRef.screenBufferSpace;
 
-    // When the lowest platform is offscreen, it can be removed and a new platform
-    // should be added
-    if (topOfLowestPlatform > screenBottom) {
-      var newPlatY = _generateNextY();
-      var newPlatX = _generateNextX();
-
-      final newPlat = randomPlatform(Vector2(newPlatX, newPlatY));
-      add(newPlat);
-
-      // after rendering, add to platforms queue for management
-      platforms.add(newPlat);
-
-      // remove the lowest platform
-      final lowestPlat = platforms.removeAt(0);
-      // remove component from game
-      lowestPlat.removeFromParent();
-      // increase score whenever "Dash passes a platform"
-      // Really, increase score when a platform passes off the screen
-      // It's the simplest way to do it
-      gameRef.score.value++;
-
-      // TODO: Configure these percentages
-      // TODO (future episode): Add additional power up code here
-      if (_shouldGenerateEntity()) {
-        final springPlat =
-            SpringBoard(position: Vector2(_generateNextX(), _generateNextY()));
-        add(springPlat);
-      }
-
-      if (_shouldGenerateEntity()) {
-        final brokenPlatform = BrokenPlatform(
-            position: Vector2(_generateNextX(), _generateNextY()));
-        add(brokenPlatform);
-      }
-
-      if (_shouldGenerateEntity()) {
-        final jetpack =
-            Jetpack(position: Vector2(_generateNextX(), _generateNextY()));
-        add(jetpack);
-      }
-
-      if (_shouldGenerateEntity()) {
-        final nooglerHat =
-            NooglerHat(position: Vector2(_generateNextX(), _generateNextY()));
-        add(nooglerHat);
-      }
-
-      // Enemies
-      // Generate Trashcan
-      if (_shouldGenerateEntity()) {
-        final trashcan = Trashcan(
-            position: Vector2(
-          _generateNextX(),
-          _generateNextY(),
-        ));
-        add(trashcan);
-      }
+    while (_enemies.isNotEmpty && _enemies.first.position.y > screenBottom) {
+      remove(_enemies.first);
+      _enemies.removeAt(0);
     }
-    super.update(dt);
-  }
 
-  // Returns true X % of the time, and false 100-X% of the time.
-  bool _shouldGenerateEntity({int percentLikely = 30}) {
-    final randNum = random.nextInt(100);
-
-    // if randNum is greater than percent likely
-    // Example:
-    //  randNum = 52, percentLikely = 30
-    //  return 52 > 70 (false)
-    return randNum > (100 - percentLikely);
+    while (_powerups.isNotEmpty && _powerups.first.position.y > screenBottom) {
+      remove(_powerups.first);
+      _powerups.removeAt(0);
+    }
   }
 }

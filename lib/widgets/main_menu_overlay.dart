@@ -80,7 +80,7 @@ class _MainMenuOverlayState extends State<MainMenuOverlay> {
                     child: Padding(
                       padding: const EdgeInsets.all(24.0),
                       child: Image.asset(
-                        'left_dash.png',
+                        'images/game/left_dash.png',
                         height: characterWidth,
                         width: characterWidth,
                       ),
@@ -112,7 +112,7 @@ class _MainMenuOverlayState extends State<MainMenuOverlay> {
                     child: Padding(
                       padding: const EdgeInsets.all(24.0),
                       child: Image.asset(
-                        'right_sparky.png',
+                        'images/game/right_sparky.png',
                         height: characterWidth,
                         width: characterWidth,
                       ),

@@ -2,8 +2,8 @@ import 'package:flame/game.dart';
 import 'package:flame/input.dart';
 import 'package:flutter/material.dart';
 
-import '../widgets/main_menu_overlay.dart';
 import './world.dart';
+import '../util/difficulty_util.dart';
 import 'platform_manager.dart';
 import 'sprites/sprites.dart';
 
@@ -17,7 +17,7 @@ class DoodleDash extends FlameGame
 
   late Player player;
   final World _world = World();
-  PlatformManager platformManager = PlatformManager();
+  ObjectManager objectManager = ObjectManager();
 
   int screenBufferSpace = 200;
   GameState state = GameState.intro;
@@ -39,7 +39,6 @@ class DoodleDash extends FlameGame
   @override
   void update(double dt) {
     super.update(dt);
-
     // stop updating in between games
     if (isGameOver) {
       return;
@@ -97,7 +96,7 @@ class DoodleDash extends FlameGame
   void initializeGameStart() {
     // remove platform if necessary, because a new one is made each time a new
     // game is started.
-    if (children.contains(platformManager)) platformManager.removeFromParent();
+    if (children.contains(objectManager)) objectManager.removeFromParent();
 
     player.reset();
 
@@ -123,13 +122,18 @@ class DoodleDash extends FlameGame
     );
 
     // reset the the platforms
-    platformManager = PlatformManager(level: level);
-    add(platformManager);
+    objectManager = ObjectManager(
+      minVerticalDistanceToNextPlatform: levels[level]!.minDistance,
+      maxVerticalDistanceToNextPlatform: levels[level]!.maxDistance,
+      difficultyMultiplier: level,
+    );
+    add(objectManager);
   }
 
   void selectCharacter(Character character) {
     this.character = character;
     player = Player(character: character);
+    player.setJumpSpeed(levels[level]!.jumpSpeed);
     add(player);
   }
 
