@@ -151,13 +151,6 @@ class Player extends SpriteGroupComponent<PlayerCharacter>
     _velocity.y = specialJumpSpeed != null ? -specialJumpSpeed : -jumpSpeed;
   }
 
-<<<<<<< HEAD
-  void megaJump() {
-    _velocity.y = -jumpSpeed * 1.5;
-  }
-
-=======
->>>>>>> 2843e8bd3df68df61d9d0cc40175f118f75a5994
   void setJumpSpeed(double jumpSpeed) {
     jumpSpeed = jumpSpeed;
   }
