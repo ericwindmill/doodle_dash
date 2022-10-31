@@ -107,17 +107,6 @@ class BrokenPlatform extends SpriteGroupComponent<BrokenPlatformState>
   void breakPlatform() {
     current = BrokenPlatformState.broken;
   }
-
-  @override
-  void onCollisionStart(
-      Set<Vector2> intersectionPoints, PositionComponent other) {
-    super.onCollisionStart(intersectionPoints, other);
-  }
-
-  @override
-  void onCollisionEnd(PositionComponent other) {
-    super.onCollisionEnd(other);
-  }
 }
 
 enum SpringState { down, up }
@@ -158,7 +147,13 @@ class SpringBoard extends SpriteGroupComponent<SpringState>
       Set<Vector2> intersectionPoints, PositionComponent other) {
     super.onCollisionStart(intersectionPoints, other);
 
-    current = SpringState.down;
+    bool isCollidingVertically =
+        (intersectionPoints.first.y - intersectionPoints.last.y).abs() < 5;
+    ;
+
+    if (isCollidingVertically) {
+      current = SpringState.down;
+    }
   }
 
   @override

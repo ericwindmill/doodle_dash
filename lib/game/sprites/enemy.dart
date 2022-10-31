@@ -70,10 +70,8 @@ class Trashcan extends SpriteComponent
   void onCollision(Set<Vector2> intersectionPoints, PositionComponent other) {
     super.onCollision(intersectionPoints, other);
 
-    if (other is Player) {
-      if (!other.isInvincible) {
-        gameRef.onLose();
-      }
+    if (other is Player && !other.isInvincible) {
+      gameRef.onLose();
     }
   }
 }
