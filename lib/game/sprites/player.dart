@@ -115,6 +115,7 @@ class Player extends SpriteGroupComponent<PlayerCharacter>
 
     // Only want Dash to  “jump” when she is falling + collides with the top of a platform
     if (isMovingDown && isCollidingVertically) {
+      // remove power up once falls down on platform
       if (current == PlayerCharacter.jetpack ||
           current == PlayerCharacter.noogler) {
         current = PlayerCharacter.center;
@@ -131,7 +132,7 @@ class Player extends SpriteGroupComponent<PlayerCharacter>
       }
     }
 
-    // Power-Ups
+    // Power-Ups - get powerup if Dash doesn't already have one
     if (!isInvincible) {
       if (other is Jetpack) {
         current = PlayerCharacter.jetpack;
@@ -150,10 +151,13 @@ class Player extends SpriteGroupComponent<PlayerCharacter>
     _velocity.y = specialJumpSpeed != null ? -specialJumpSpeed : -jumpSpeed;
   }
 
+<<<<<<< HEAD
   void megaJump() {
     _velocity.y = -jumpSpeed * 1.5;
   }
 
+=======
+>>>>>>> 2843e8bd3df68df61d9d0cc40175f118f75a5994
   void setJumpSpeed(double jumpSpeed) {
     jumpSpeed = jumpSpeed;
   }

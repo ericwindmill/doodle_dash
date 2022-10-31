@@ -48,7 +48,7 @@ enum MovingPlatformState { only }
 class MovingPlatform extends Platform<MovingPlatformState> {
   MovingPlatform({super.position});
 
-  Vector2 _velocity = Vector2.zero();
+  final Vector2 _velocity = Vector2.zero();
   double direction = 1;
   double speed = 35;
   Random random = Random();
@@ -107,17 +107,6 @@ class BrokenPlatform extends Platform<BrokenPlatformState> {
   void breakPlatform() {
     current = BrokenPlatformState.broken;
   }
-
-  @override
-  void onCollisionStart(
-      Set<Vector2> intersectionPoints, PositionComponent other) {
-    super.onCollisionStart(intersectionPoints, other);
-  }
-
-  @override
-  void onCollisionEnd(PositionComponent other) {
-    super.onCollisionEnd(other);
-  }
 }
 
 enum SpringState { down, up }
@@ -145,7 +134,12 @@ class SpringBoard extends Platform<SpringState> {
       Set<Vector2> intersectionPoints, PositionComponent other) {
     super.onCollisionStart(intersectionPoints, other);
 
-    current = SpringState.down;
+    bool isCollidingVertically =
+        (intersectionPoints.first.y - intersectionPoints.last.y).abs() < 5;
+
+    if (isCollidingVertically) {
+      current = SpringState.down;
+    }
   }
 
   @override
