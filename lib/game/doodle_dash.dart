@@ -4,8 +4,8 @@ import 'package:flutter/material.dart';
 
 import './object_manager.dart';
 import './world.dart';
-import '../util/difficulty_util.dart';
 import 'sprites/sprites.dart';
+import 'util/util.dart';
 
 enum GameState { intro, playing, gameOver }
 

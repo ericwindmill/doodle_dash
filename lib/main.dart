@@ -3,11 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 import 'game/doodle_dash.dart';
-import 'util/theme.dart';
-import 'widgets/game_over_overlay.dart';
-import 'widgets/game_overlay.dart';
-import 'widgets/main_menu_overlay.dart';
-import 'util/color_schemes.dart';
+import 'game/util/util.dart';
+import 'game/widgets/widgets.dart';
 
 void main() {
   runApp(const MyApp());

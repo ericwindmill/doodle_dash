@@ -2,12 +2,9 @@ import 'dart:math';
 
 import 'package:flame/components.dart';
 
-import '../util/difficulty_util.dart';
-import '../util/num_utils.dart';
 import 'doodle_dash.dart';
-import 'sprites/enemy.dart';
-import 'sprites/platform.dart';
-import 'sprites/powerup.dart';
+import 'sprites/sprites.dart';
+import 'util/util.dart';
 
 final Random _rand = Random();
 
