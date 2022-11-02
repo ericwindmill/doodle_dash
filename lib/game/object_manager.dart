@@ -29,6 +29,7 @@ class ObjectManager extends Component with HasGameRef<DoodleDash> {
   @override
   void onMount() {
     super.onMount();
+    increaseDifficulty(1);
 
     // The X that will be used for the next platform.
     // The initial X is the middle of the screen.
@@ -89,6 +90,12 @@ class ObjectManager extends Component with HasGameRef<DoodleDash> {
       // Really, increase score when a platform passes off the screen
       // It's the simplest way to do it
       gameRef.score.value++;
+
+      int? nextLevel = scoreToLevel[gameRef.score.value];
+
+      if (nextLevel != null) {
+        increaseDifficulty(nextLevel);
+      }
 
       _maybeAddPowerup();
       _maybeAddEnemy();

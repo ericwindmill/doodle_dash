@@ -1,3 +1,5 @@
+Map<int, int> scoreToLevel = {0: 1, 20: 2, 40: 3, 80: 4, 120: 5};
+
 class Difficulty {
   final double minDistance;
   final double maxDistance;
