@@ -8,20 +8,20 @@ import 'player.dart';
 
 const Set<int> _movmentSpeeds = {0, 50, 100};
 
-enum _Direction {
+enum Direction {
   left,
   right,
 }
 
-class Trashcan extends SpriteComponent
+class Enemy extends SpriteComponent
     with CollisionCallbacks, HasGameRef<DoodleDash> {
-  Trashcan({super.position}) : super(size: Vector2.all(50), priority: 2) {
+  Enemy({super.position}) : super(size: Vector2.all(50), priority: 2) {
     final randMovementSpeed = Random().nextInt(_movmentSpeeds.length - 1);
     movementSpeed = _movmentSpeeds.elementAt(randMovementSpeed).toDouble();
   }
 
   late double movementSpeed;
-  _Direction _direction = _Direction.right;
+  Direction _direction = Direction.right;
 
   @override
   Future<void>? onLoad() async {
@@ -40,26 +40,26 @@ class Trashcan extends SpriteComponent
     // If Dash is heading left and
     // within 50px of the left edge of the screen
     // change directions
-    if (_direction == _Direction.left &&
+    if (_direction == Direction.left &&
         position.x - screenEdgeBuffer < screenLeftEdge) {
-      _direction = _Direction.right;
+      _direction = Direction.right;
       return;
     }
 
     // If Dash is heading right and
     // within 50px of the right edge of the screen
     // change directions
-    if (_direction == _Direction.right &&
+    if (_direction == Direction.right &&
         position.x + screenEdgeBuffer > screenRightEdge) {
-      _direction = _Direction.left;
+      _direction = Direction.left;
       return;
     }
 
-    if (_direction == _Direction.right) {
+    if (_direction == Direction.right) {
       position.x += movementSpeed * dt;
     }
 
-    if (_direction == _Direction.left) {
+    if (_direction == Direction.left) {
       position.x -= movementSpeed * dt;
     }
 

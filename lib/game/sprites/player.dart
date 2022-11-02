@@ -12,7 +12,7 @@ enum PlayerCharacter { left, right, center, jetpack, noogler }
 
 class Player extends SpriteGroupComponent<PlayerCharacter>
     with HasGameRef<DoodleDash>, KeyboardHandler, CollisionCallbacks {
-  Player({super.position, required this.character})
+  Player({super.position, required this.character, this.jumpSpeed = 600})
       : super(
           size: Vector2.all(100),
           anchor: Anchor.center,
@@ -27,9 +27,8 @@ class Player extends SpriteGroupComponent<PlayerCharacter>
   Character character;
 
   // used to calculate the horizontal movement speed
-  final double _moveSpeed = 400; // horizontal travel speed
   final double _gravity = 9; // acceleration pulling Dash down
-  double _jumpSpeed = 600; // vertical travel speed
+  double jumpSpeed; // vertical travel speed
 
   @override
   Future<void> onLoad() async {
@@ -48,7 +47,7 @@ class Player extends SpriteGroupComponent<PlayerCharacter>
   void update(double dt) {
     if (gameRef.isIntro || gameRef.isGameOver) return;
 
-    _velocity.x = _hAxisInput * _moveSpeed; // Dash's horizontal velocity
+    _velocity.x = _hAxisInput * jumpSpeed; // Dash's horizontal velocity
     _velocity.y +=
         _gravity; // Gravity is always acting on Dash's vertical veloctiy
 
@@ -105,8 +104,7 @@ class Player extends SpriteGroupComponent<PlayerCharacter>
 
   // Callback for Dash colliding with another component in the game
   @override
-  void onCollisionStart(
-      Set<Vector2> intersectionPoints, PositionComponent other) {
+  void onCollision(Set<Vector2> intersectionPoints, PositionComponent other) {
     super.onCollisionStart(intersectionPoints, other);
 
     // Check if Dash is moving down and collides with a platform from the top
@@ -123,10 +121,10 @@ class Player extends SpriteGroupComponent<PlayerCharacter>
         current = PlayerCharacter.center;
       }
 
-      if (other is Platform) {
+      if (other is NormalPlatform || other is MovingPlatform) {
         jump();
       } else if (other is SpringBoard) {
-        jump(specialJumpSpeed: _jumpSpeed * 2);
+        jump(specialJumpSpeed: jumpSpeed * 2);
       } else if (other is BrokenPlatform &&
           other.current == BrokenPlatformState.cracked) {
         jump();
@@ -138,10 +136,10 @@ class Player extends SpriteGroupComponent<PlayerCharacter>
     if (!isInvincible) {
       if (other is Jetpack) {
         current = PlayerCharacter.jetpack;
-        jump(specialJumpSpeed: _jumpSpeed * 3.5);
+        jump(specialJumpSpeed: jumpSpeed * 3.5);
       } else if (other is NooglerHat) {
         current = PlayerCharacter.noogler;
-        jump(specialJumpSpeed: _jumpSpeed * 4);
+        jump(specialJumpSpeed: jumpSpeed * 4);
       }
     }
 
@@ -150,15 +148,14 @@ class Player extends SpriteGroupComponent<PlayerCharacter>
 
   void jump({double? specialJumpSpeed}) {
     // Top left is 0,0 so going "up" is negative
-    _velocity.y = specialJumpSpeed != null ? -specialJumpSpeed : -_jumpSpeed;
+    _velocity.y = specialJumpSpeed != null ? -specialJumpSpeed : -jumpSpeed;
   }
 
   void setJumpSpeed(double jumpSpeed) {
-    _jumpSpeed = jumpSpeed;
+    jumpSpeed = jumpSpeed;
   }
 
   Future<void> _loadCharacterSprites() async {
-    print(character.name);
     // Load & configure sprite assets
     final left = await gameRef.loadSprite('game/left_${character.name}.png');
     final right = await gameRef.loadSprite('game/right_${character.name}.png');
