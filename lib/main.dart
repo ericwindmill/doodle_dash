@@ -3,10 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 import 'game/doodle_dash.dart';
-import 'util/theme.dart';
-import 'widgets/game_over_overlay.dart';
-import 'widgets/game_overlay.dart';
-import 'widgets/main_menu_overlay.dart';
+import 'game/util/util.dart';
+import 'game/widgets/widgets.dart';
 
 void main() {
   runApp(const MyApp());
@@ -19,7 +17,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Doodle Dash',
       theme: ThemeData(
-        primarySwatch: Palette.primarySwatch,
+        colorScheme: darkColorScheme,
         textTheme: appFontTheme,
       ),
       home: const MyHomePage(title: 'Doodle Dash'),
@@ -41,15 +39,26 @@ class _MyHomePageState extends State<MyHomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: Center(
-        child: GameWidget(
-          // hot reload in development mode,
-          game: game,
-          overlayBuilderMap: <String, Widget Function(BuildContext, Game)>{
-            'gameOverlay': (context, game) => GameOverlay(game),
-            'mainMenuOverlay': (context, game) => MainMenuOverlay(game),
-            'gameOverOverlay': (context, game) => GameOverOverlay(game),
-          },
-        ),
+        child: LayoutBuilder(builder: (context, constraints) {
+          return Container(
+            constraints: BoxConstraints(
+                maxWidth: constraints.maxWidth > constraints.maxHeight
+                    ? constraints.maxHeight
+                    : constraints.maxWidth),
+            child: Container(
+              child: GameWidget(
+                // hot reload in development mode,
+                game: game,
+                overlayBuilderMap: <String,
+                    Widget Function(BuildContext, Game)>{
+                  'gameOverlay': (context, game) => GameOverlay(game),
+                  'mainMenuOverlay': (context, game) => MainMenuOverlay(game),
+                  'gameOverOverlay': (context, game) => GameOverOverlay(game),
+                },
+              ),
+            ),
+          );
+        }),
       ),
     );
   }

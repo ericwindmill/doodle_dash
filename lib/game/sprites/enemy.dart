@@ -4,7 +4,7 @@ import 'package:flame/collisions.dart';
 import 'package:flame/components.dart';
 
 import '../doodle_dash.dart';
-import 'player.dart';
+import 'sprites.dart';
 
 const Set<int> _movmentSpeeds = {0, 50, 100};
 

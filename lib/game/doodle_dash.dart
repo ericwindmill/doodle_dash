@@ -2,10 +2,10 @@ import 'package:flame/game.dart';
 import 'package:flame/input.dart';
 import 'package:flutter/material.dart';
 
+import './object_manager.dart';
 import './world.dart';
-import '../util/difficulty_util.dart';
-import 'platform_manager.dart';
 import 'sprites/sprites.dart';
+import 'util/util.dart';
 
 enum GameState { intro, playing, gameOver }
 
@@ -139,6 +139,7 @@ class DoodleDash extends FlameGame
 
   void selectDifficulty(int level) {
     this.level = level;
+    objectManager.increaseDifficulty(level);
   }
 
   void startGame() {

@@ -1,8 +1,8 @@
 import 'package:flame/game.dart';
 import 'package:flutter/material.dart';
 
-import '../game/doodle_dash.dart';
-import 'score_display.dart';
+import '../doodle_dash.dart';
+import 'widgets.dart';
 
 // Overlay that shows up during an active game
 

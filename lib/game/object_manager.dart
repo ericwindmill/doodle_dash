@@ -2,12 +2,9 @@ import 'dart:math';
 
 import 'package:flame/components.dart';
 
-import '../util/difficulty_util.dart';
-import '../util/num_utils.dart';
 import 'doodle_dash.dart';
-import 'sprites/enemy.dart';
-import 'sprites/platform.dart';
-import 'sprites/powerup.dart';
+import 'sprites/sprites.dart';
+import 'util/util.dart';
 
 final Random _rand = Random();
 
@@ -29,6 +26,7 @@ class ObjectManager extends Component with HasGameRef<DoodleDash> {
   @override
   void onMount() {
     super.onMount();
+    increaseDifficulty(1);
 
     // The X that will be used for the next platform.
     // The initial X is the middle of the screen.
@@ -89,6 +87,12 @@ class ObjectManager extends Component with HasGameRef<DoodleDash> {
       // Really, increase score when a platform passes off the screen
       // It's the simplest way to do it
       gameRef.score.value++;
+
+      int? nextLevel = scoreToLevel[gameRef.score.value];
+
+      if (nextLevel != null && difficultyMultiplier < nextLevel) {
+        increaseDifficulty(nextLevel);
+      }
 
       _maybeAddPowerup();
       _maybeAddEnemy();
