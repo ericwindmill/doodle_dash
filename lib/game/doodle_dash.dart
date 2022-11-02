@@ -139,6 +139,7 @@ class DoodleDash extends FlameGame
 
   void selectDifficulty(int level) {
     this.level = level;
+    objectManager.increaseDifficulty(level);
   }
 
   void startGame() {

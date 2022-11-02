@@ -90,7 +90,7 @@ class ObjectManager extends Component with HasGameRef<DoodleDash> {
 
       int? nextLevel = scoreToLevel[gameRef.score.value];
 
-      if (nextLevel != null) {
+      if (nextLevel != null && difficultyMultiplier < nextLevel) {
         increaseDifficulty(nextLevel);
       }
 

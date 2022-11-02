@@ -20,161 +20,165 @@ class _MainMenuOverlayState extends State<MainMenuOverlay> {
 
   @override
   Widget build(BuildContext context) {
-    final screenSize = MediaQuery.of(context).size;
-    final characterWidth = screenSize.width / 3.5;
+    return LayoutBuilder(builder: (context, constraints) {
+      final characterWidth = constraints.maxWidth / 3;
 
-    return Material(
-      color: Palette.background,
-      child: Padding(
-        padding: const EdgeInsets.all(24.0),
-        child: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              Text(
-                'Doodle Dash',
-                style: Theme.of(context)
-                    .textTheme
-                    .displayLarge!
-                    .copyWith(color: Palette.lightText, height: .8),
-                textAlign: TextAlign.center,
-              ),
-              const WhiteSpace(),
-              Align(
-                alignment: Alignment.centerLeft,
-                child: Text(
-                  'Select character:',
+      return Material(
+        color: Palette.background,
+        child: Padding(
+          padding: const EdgeInsets.all(24.0),
+          child: Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Text(
+                  'Doodle Dash',
                   style: Theme.of(context)
                       .textTheme
-                      .headlineSmall!
-                      .copyWith(color: Palette.lightText),
+                      .displayLarge!
+                      .copyWith(color: Palette.lightText, height: .8),
+                  textAlign: TextAlign.center,
                 ),
-              ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  OutlinedButton(
-                    onPressed: () {
-                      setState(() {
-                        character = Character.dash;
-                      });
-                    },
-                    style: ButtonStyle(
-                      side: MaterialStateProperty.all(
-                        const BorderSide(color: Colors.black38, width: 2),
-                      ),
-                      backgroundColor: MaterialStateProperty.resolveWith<Color>(
-                        (states) {
-                          if (states.contains(MaterialState.hovered)) {
-                            return Palette.spaceLight;
-                          }
-                          if (character != null &&
-                              character == Character.sparky) {
-                            return Palette.spaceLight;
-                          }
-                          return Palette.spaceMedium;
-                        },
-                      ),
-                    ),
-                    child: Padding(
-                      padding: const EdgeInsets.all(24.0),
-                      child: Image.asset(
-                        'assets/images/game/left_dash.png',
-                        height: characterWidth,
-                        width: characterWidth,
-                      ),
-                    ),
-                  ),
-                  OutlinedButton(
-                    onPressed: () {
-                      setState(() {
-                        character = Character.sparky;
-                      });
-                    },
-                    style: ButtonStyle(
-                      side: MaterialStateProperty.all(
-                        const BorderSide(color: Colors.black38, width: 2),
-                      ),
-                      backgroundColor: MaterialStateProperty.resolveWith<Color>(
-                        (states) {
-                          if (states.contains(MaterialState.hovered)) {
-                            return Palette.spaceLight;
-                          }
-                          if (character != null &&
-                              character == Character.sparky) {
-                            return Palette.spaceLight;
-                          }
-                          return Palette.spaceMedium;
-                        },
-                      ),
-                    ),
-                    child: Padding(
-                      padding: const EdgeInsets.all(24.0),
-                      child: Image.asset(
-                        'assets/images/game/right_sparky.png',
-                        height: characterWidth,
-                        width: characterWidth,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text(
-                    'Difficulty:',
+                const WhiteSpace(),
+                Align(
+                  alignment: Alignment.center,
+                  child: Text(
+                    'Select your character:',
                     style: Theme.of(context)
                         .textTheme
-                        .bodyLarge!
+                        .headlineSmall!
                         .copyWith(color: Palette.lightText),
                   ),
-                  Expanded(
-                    child: Slider(
-                      thumbColor: Palette.accent,
-                      activeColor: Palette.active,
-                      inactiveColor: Palette.inactive,
-                      value: (widget.game as DoodleDash).level.toDouble(),
-                      max: 5,
-                      min: 1,
-                      divisions: 4,
-                      label: 'Difficulty',
-                      onChanged: ((value) {
-                        setState(() {
-                          (widget.game as DoodleDash)
-                              .selectDifficulty(value.toInt());
-                        });
-                      }),
-                    ),
-                  ),
-                ],
-              ),
-              const WhiteSpace(),
-              Center(
-                child: ElevatedButton(
-                  onPressed: (character != null)
-                      ? () async {
-                          (widget.game as DoodleDash)
-                              .selectCharacter(character!);
-                          (widget.game as DoodleDash).startGame();
-                        }
-                      : null,
-                  style: ButtonStyle(
-                    minimumSize: MaterialStateProperty.all(
-                      const Size(100, 50),
-                    ),
-                    textStyle: MaterialStateProperty.all(
-                        Theme.of(context).textTheme.titleLarge),
-                  ),
-                  child: const Text('Start'),
                 ),
-              ),
-            ],
+                const WhiteSpace(height: 30),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    OutlinedButton(
+                      onPressed: () {
+                        setState(() {
+                          character = Character.dash;
+                        });
+                      },
+                      style: ButtonStyle(
+                        side: MaterialStateProperty.all(
+                          const BorderSide(color: Colors.black38, width: 2),
+                        ),
+                        backgroundColor:
+                            MaterialStateProperty.resolveWith<Color>(
+                          (states) {
+                            if (states.contains(MaterialState.hovered)) {
+                              return Palette.spaceLight;
+                            }
+                            if (character != null &&
+                                character == Character.sparky) {
+                              return Palette.spaceLight;
+                            }
+                            return Palette.spaceMedium;
+                          },
+                        ),
+                      ),
+                      child: Padding(
+                        padding: const EdgeInsets.all(24.0),
+                        child: Image.asset(
+                          'assets/images/game/left_dash.png',
+                          height: characterWidth,
+                          width: characterWidth,
+                        ),
+                      ),
+                    ),
+                    OutlinedButton(
+                      onPressed: () {
+                        setState(() {
+                          character = Character.sparky;
+                        });
+                      },
+                      style: ButtonStyle(
+                        side: MaterialStateProperty.all(
+                          const BorderSide(color: Colors.black38, width: 2),
+                        ),
+                        backgroundColor:
+                            MaterialStateProperty.resolveWith<Color>(
+                          (states) {
+                            if (states.contains(MaterialState.hovered)) {
+                              return Palette.spaceLight;
+                            }
+                            if (character != null &&
+                                character == Character.sparky) {
+                              return Palette.spaceLight;
+                            }
+                            return Palette.spaceMedium;
+                          },
+                        ),
+                      ),
+                      child: Padding(
+                        padding: const EdgeInsets.all(24.0),
+                        child: Image.asset(
+                          'assets/images/game/right_sparky.png',
+                          height: characterWidth,
+                          width: characterWidth,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      'Difficulty:',
+                      style: Theme.of(context)
+                          .textTheme
+                          .bodyLarge!
+                          .copyWith(color: Palette.lightText),
+                    ),
+                    Expanded(
+                      child: Slider(
+                        thumbColor: Palette.accent,
+                        activeColor: Palette.active,
+                        inactiveColor: Palette.inactive,
+                        value: (widget.game as DoodleDash).level.toDouble(),
+                        max: 5,
+                        min: 1,
+                        divisions: 4,
+                        label: 'Difficulty',
+                        onChanged: ((value) {
+                          setState(() {
+                            (widget.game as DoodleDash)
+                                .selectDifficulty(value.toInt());
+                          });
+                        }),
+                      ),
+                    ),
+                  ],
+                ),
+                const WhiteSpace(),
+                Center(
+                  child: ElevatedButton(
+                    onPressed: (character != null)
+                        ? () async {
+                            (widget.game as DoodleDash)
+                                .selectCharacter(character!);
+                            (widget.game as DoodleDash).startGame();
+                          }
+                        : null,
+                    style: ButtonStyle(
+                      minimumSize: MaterialStateProperty.all(
+                        const Size(100, 50),
+                      ),
+                      textStyle: MaterialStateProperty.all(
+                          Theme.of(context).textTheme.titleLarge),
+                    ),
+                    child: const Text('Start'),
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
-      ),
-    );
+      );
+    });
   }
 }
 
