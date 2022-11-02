@@ -7,6 +7,7 @@ import 'util/theme.dart';
 import 'widgets/game_over_overlay.dart';
 import 'widgets/game_overlay.dart';
 import 'widgets/main_menu_overlay.dart';
+import 'util/color_schemes.dart';
 
 void main() {
   runApp(const MyApp());
@@ -19,7 +20,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Doodle Dash',
       theme: ThemeData(
-        primarySwatch: Palette.primarySwatch,
+        colorScheme: darkColorScheme,
         textTheme: appFontTheme,
       ),
       home: const MyHomePage(title: 'Doodle Dash'),
