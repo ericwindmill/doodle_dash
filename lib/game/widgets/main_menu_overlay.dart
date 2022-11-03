@@ -21,7 +21,7 @@ class _MainMenuOverlayState extends State<MainMenuOverlay> {
   @override
   Widget build(BuildContext context) {
     return LayoutBuilder(builder: (context, constraints) {
-      final characterWidth = constraints.maxWidth / 3;
+      final characterWidth = constraints.maxWidth / 5;
 
       return Material(
         color: Palette.background,
@@ -72,7 +72,7 @@ class _MainMenuOverlayState extends State<MainMenuOverlay> {
                               return Palette.spaceLight;
                             }
                             if (character != null &&
-                                character == Character.sparky) {
+                                character == Character.dash) {
                               return Palette.spaceLight;
                             }
                             return Palette.spaceMedium;
@@ -81,10 +81,19 @@ class _MainMenuOverlayState extends State<MainMenuOverlay> {
                       ),
                       child: Padding(
                         padding: const EdgeInsets.all(24.0),
-                        child: Image.asset(
-                          'assets/images/game/left_dash.png',
-                          height: characterWidth,
-                          width: characterWidth,
+                        child: Column(
+                          children: [
+                            Image.asset(
+                              'assets/images/game/left_dash.png',
+                              height: characterWidth,
+                              width: characterWidth,
+                            ),
+                            const WhiteSpace(height: 18),
+                            const Text(
+                              'Dash',
+                              style: TextStyle(fontSize: 24),
+                            ),
+                          ],
                         ),
                       ),
                     ),
@@ -114,15 +123,25 @@ class _MainMenuOverlayState extends State<MainMenuOverlay> {
                       ),
                       child: Padding(
                         padding: const EdgeInsets.all(24.0),
-                        child: Image.asset(
-                          'assets/images/game/right_sparky.png',
-                          height: characterWidth,
-                          width: characterWidth,
+                        child: Column(
+                          children: [
+                            Image.asset(
+                              'assets/images/game/right_sparky.png',
+                              height: characterWidth,
+                              width: characterWidth,
+                            ),
+                            const WhiteSpace(height: 18),
+                            const Text(
+                              'Sparky',
+                              style: TextStyle(fontSize: 24),
+                            ),
+                          ],
                         ),
                       ),
                     ),
                   ],
                 ),
+                const WhiteSpace(),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
@@ -142,7 +161,7 @@ class _MainMenuOverlayState extends State<MainMenuOverlay> {
                         max: 5,
                         min: 1,
                         divisions: 4,
-                        label: 'Difficulty',
+                        label: (widget.game as DoodleDash).level.toString(),
                         onChanged: ((value) {
                           setState(() {
                             (widget.game as DoodleDash)
