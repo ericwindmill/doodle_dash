@@ -37,24 +37,24 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Palette.accent,
       body: Center(
         child: LayoutBuilder(builder: (context, constraints) {
           return Container(
-            constraints: BoxConstraints(
-                maxWidth: constraints.maxWidth > constraints.maxHeight
-                    ? constraints.maxHeight
-                    : constraints.maxWidth),
-            child: Container(
-              child: GameWidget(
-                // hot reload in development mode,
-                game: game,
-                overlayBuilderMap: <String,
-                    Widget Function(BuildContext, Game)>{
-                  'gameOverlay': (context, game) => GameOverlay(game),
-                  'mainMenuOverlay': (context, game) => MainMenuOverlay(game),
-                  'gameOverOverlay': (context, game) => GameOverOverlay(game),
-                },
-              ),
+            constraints: const BoxConstraints(
+              // 1000 is arbitrary, should be tweaked (todo eric)
+              // 550 is the smallest Chrome will allow you to make the window
+              maxWidth: 1000,
+              minWidth: 550,
+            ),
+            child: GameWidget(
+              // hot reload in development mode,
+              game: game,
+              overlayBuilderMap: <String, Widget Function(BuildContext, Game)>{
+                'gameOverlay': (context, game) => GameOverlay(game),
+                'mainMenuOverlay': (context, game) => MainMenuOverlay(game),
+                'gameOverOverlay': (context, game) => GameOverOverlay(game),
+              },
             ),
           );
         }),

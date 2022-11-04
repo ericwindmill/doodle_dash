@@ -110,7 +110,7 @@ class Player extends SpriteGroupComponent<PlayerCharacter>
     // this allows Dash to move up _through_ platforms without collision
     bool isMovingDown = _velocity.y > 0;
     bool isCollidingVertically =
-        (intersectionPoints.first.y - intersectionPoints.last.y).abs() < 5;
+        (intersectionPoints.first.y - intersectionPoints.last.y).abs() < 8;
 
     // Only want Dash to  “jump” when she is falling + collides with the top of a platform
     if (isMovingDown && isCollidingVertically) {
