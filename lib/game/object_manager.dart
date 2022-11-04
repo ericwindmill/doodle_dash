@@ -194,7 +194,7 @@ class ObjectManager extends Component with HasGameRef<DoodleDash> {
     }
 
     // There is a 15% chance to add a jetpack
-    if (nextInt.between(85, 100)) {
+    if (nextInt.between(, 100)) {
       var jetpack = Jetpack(
         position: Vector2(_generateNextX(), _generateNextY()),
       );
@@ -205,10 +205,10 @@ class ObjectManager extends Component with HasGameRef<DoodleDash> {
 
   void _maybeAddEnemy() {
     // There will be 5 - 25% added to the probabilibity based on the current
-    // difficulty.
+    // difficulty. i.e. level 1 adds 5% and level 5 adds 25%
     var basePercentageAddedFromDifficulty = difficultyMultiplier * 5;
     var nextInt = _rand.nextInt(100) + basePercentageAddedFromDifficulty;
-    if (nextInt > 75) {
+    if (nextInt > 95) {
       var trashcan = Enemy(
         position: Vector2(_generateNextX(), _generateNextY()),
       );
