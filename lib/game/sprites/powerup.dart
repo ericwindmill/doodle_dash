@@ -3,9 +3,10 @@ import 'package:flame/components.dart';
 
 import '../doodle_dash.dart';
 
-class PowerUp extends SpriteComponent
+abstract class PowerUp extends SpriteComponent
     with HasGameRef<DoodleDash>, CollisionCallbacks {
   final hitbox = RectangleHitbox();
+  double get jumpSpeedMultiplier;
 
   PowerUp({
     super.position,
@@ -23,6 +24,9 @@ class PowerUp extends SpriteComponent
 }
 
 class Jetpack extends PowerUp {
+  @override
+  double get jumpSpeedMultiplier => 3.5;
+
   Jetpack({
     super.position,
   });
@@ -35,9 +39,14 @@ class Jetpack extends PowerUp {
 }
 
 class NooglerHat extends PowerUp {
+  @override
+  double get jumpSpeedMultiplier => 2.5;
+
   NooglerHat({
     super.position,
   });
+
+  final int activeLengthInMS = 5000;
 
   @override
   Future<void>? onLoad() async {

@@ -7,9 +7,9 @@ import 'package:flutter/services.dart';
 import '../doodle_dash.dart';
 import 'sprites.dart';
 
-enum PlayerCharacter { left, right, center, jetpack, noogler }
+enum PlayerState { left, right, center, jetpack, noogler }
 
-class Player extends SpriteGroupComponent<PlayerCharacter>
+class Player extends SpriteGroupComponent<PlayerState>
     with HasGameRef<DoodleDash>, KeyboardHandler, CollisionCallbacks {
   Player({super.position, required this.character, this.jumpSpeed = 600})
       : super(
@@ -22,7 +22,6 @@ class Player extends SpriteGroupComponent<PlayerCharacter>
 
   // used to calculate if the user is moving Dash left (-1) or right (1)
   int _hAxisInput = 0;
-
   Character character;
 
   // used to calculate the horizontal movement speed
@@ -37,9 +36,7 @@ class Player extends SpriteGroupComponent<PlayerCharacter>
     await add(CircleHitbox());
 
     await _loadCharacterSprites();
-
-    // arbitrarily start with Dash facing right
-    current = PlayerCharacter.center;
+    current = PlayerState.center;
   }
 
   @override
@@ -66,7 +63,7 @@ class Player extends SpriteGroupComponent<PlayerCharacter>
 
   void reset() {
     _velocity = Vector2.zero();
-    current = PlayerCharacter.center;
+    current = PlayerState.center;
   }
 
   // When arrow keys are pressed, change Dash's travel direction + sprite
@@ -75,15 +72,15 @@ class Player extends SpriteGroupComponent<PlayerCharacter>
     _hAxisInput = 0;
 
     if (keysPressed.contains(LogicalKeyboardKey.arrowLeft)) {
-      if (current != PlayerCharacter.jetpack) {
-        current = PlayerCharacter.left;
+      if (current != PlayerState.jetpack) {
+        current = PlayerState.left;
       }
       _hAxisInput += -1;
     }
 
     if (keysPressed.contains(LogicalKeyboardKey.arrowRight)) {
-      if (current != PlayerCharacter.jetpack) {
-        current = PlayerCharacter.right;
+      if (current != PlayerState.jetpack) {
+        current = PlayerState.right;
       }
       _hAxisInput += 1;
     }
@@ -98,8 +95,10 @@ class Player extends SpriteGroupComponent<PlayerCharacter>
 
   bool get isMovingDown => _velocity.y > 0;
 
-  bool get isInvincible =>
-      current == PlayerCharacter.jetpack || current == PlayerCharacter.noogler;
+  bool get hasPowerup =>
+      current == PlayerState.jetpack || current == PlayerState.noogler;
+
+  bool get isInvincible => current == PlayerState.jetpack;
 
   // Callback for Dash colliding with another component in the game
   @override
@@ -112,15 +111,16 @@ class Player extends SpriteGroupComponent<PlayerCharacter>
     bool isCollidingVertically =
         (intersectionPoints.first.y - intersectionPoints.last.y).abs() < 8;
 
+    if (isMovingDown && hasPowerup) {
+      current = PlayerState.center;
+    }
+
     // Only want Dash to  “jump” when she is falling + collides with the top of a platform
     if (isMovingDown && isCollidingVertically) {
       // remove power up once falls down on platform
-      if (current == PlayerCharacter.jetpack ||
-          current == PlayerCharacter.noogler) {
-        current = PlayerCharacter.center;
-      }
-
-      if (other is NormalPlatform || other is MovingPlatform) {
+      if (other is EnemyPlatform && !isInvincible) {
+        gameRef.onLose();
+      } else if (other is NormalPlatform) {
         jump();
       } else if (other is SpringBoard) {
         jump(specialJumpSpeed: jumpSpeed * 2);
@@ -131,18 +131,24 @@ class Player extends SpriteGroupComponent<PlayerCharacter>
       }
     }
 
-    // Power-Ups - get powerup if Dash doesn't already have one
-    if (!isInvincible) {
+    if (!hasPowerup) {
       if (other is Jetpack) {
-        current = PlayerCharacter.jetpack;
-        jump(specialJumpSpeed: jumpSpeed * 3.5);
+        current = PlayerState.jetpack;
+        jump(specialJumpSpeed: jumpSpeed * other.jumpSpeedMultiplier);
       } else if (other is NooglerHat) {
-        current = PlayerCharacter.noogler;
-        jump(specialJumpSpeed: jumpSpeed * 4);
+        current = PlayerState.noogler;
+        _removePowerupAfterTime(other.activeLengthInMS);
+        jump(specialJumpSpeed: jumpSpeed * other.jumpSpeedMultiplier);
       }
     }
 
     super.onCollision(intersectionPoints, other);
+  }
+
+  void _removePowerupAfterTime(int ms) {
+    Future.delayed(Duration(milliseconds: ms), () {
+      current = PlayerState.center;
+    });
   }
 
   void jump({double? specialJumpSpeed}) {
@@ -164,12 +170,12 @@ class Player extends SpriteGroupComponent<PlayerCharacter>
     final noogler =
         await gameRef.loadSprite('game/noogler_${character.name}.png');
 
-    sprites = <PlayerCharacter, Sprite>{
-      PlayerCharacter.left: left,
-      PlayerCharacter.right: right,
-      PlayerCharacter.center: center,
-      PlayerCharacter.jetpack: jetpack,
-      PlayerCharacter.noogler: noogler,
+    sprites = <PlayerState, Sprite>{
+      PlayerState.left: left,
+      PlayerState.right: right,
+      PlayerState.center: center,
+      PlayerState.jetpack: jetpack,
+      PlayerState.noogler: noogler,
     };
   }
 }

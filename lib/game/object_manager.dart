@@ -20,7 +20,7 @@ class ObjectManager extends Component with HasGameRef<DoodleDash> {
   int difficultyMultiplier;
   final List<Platform> _platforms = [];
   final List<PowerUp> _powerups = [];
-  final List<Enemy> _enemies = [];
+  final List<EnemyPlatform> _enemies = [];
   final double _tallestPlatformHeight = 50;
 
   @override
@@ -170,7 +170,7 @@ class ObjectManager extends Component with HasGameRef<DoodleDash> {
     }
 
     if (nextInt.between(70, 85)) {
-      return MovingPlatform(position: position);
+      return NormalPlatform(position: position);
     }
 
     if (nextInt.between(85, 100)) {
@@ -183,8 +183,8 @@ class ObjectManager extends Component with HasGameRef<DoodleDash> {
   void _maybeAddPowerup() {
     var nextInt = _rand.nextInt(100);
 
-    // there is a 15% chance to add a Noogler Hat
-    if (nextInt.between(70, 85)) {
+    // there is a 10% chance to add a Noogler Hat
+    if (nextInt.between(80, 90)) {
       // generate powerup
       var nooglerHat = NooglerHat(
         position: Vector2(_generateNextX(), _generateNextY()),
@@ -193,8 +193,8 @@ class ObjectManager extends Component with HasGameRef<DoodleDash> {
       _powerups.add(nooglerHat);
     }
 
-    // There is a 15% chance to add a jetpack
-    if (nextInt.between(, 100)) {
+    // There is a 5% chance to add a jetpack
+    if (nextInt.between(95, 100)) {
       var jetpack = Jetpack(
         position: Vector2(_generateNextX(), _generateNextY()),
       );
@@ -209,7 +209,7 @@ class ObjectManager extends Component with HasGameRef<DoodleDash> {
     var basePercentageAddedFromDifficulty = difficultyMultiplier * 5;
     var nextInt = _rand.nextInt(100) + basePercentageAddedFromDifficulty;
     if (nextInt > 95) {
-      var trashcan = Enemy(
+      var trashcan = EnemyPlatform(
         position: Vector2(_generateNextX(), _generateNextY()),
       );
       add(trashcan);

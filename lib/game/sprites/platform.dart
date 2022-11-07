@@ -3,12 +3,22 @@ import 'dart:math';
 
 import 'package:flame/collisions.dart';
 import 'package:flame/components.dart';
+import 'package:flutter/widgets.dart';
 
 import '../doodle_dash.dart';
 
+/// The supertype for all Platforms, including Enemies
+/// This class adds a hitbox and Collision Callbacks to all subtypes,
+/// It also allows the platform to move, if it wants to. All platforms
+/// know how to move, and have a 20% chance of being a moving platform
+///
+/// [T] should be an enum that is used to Switch between spirtes, if necessary
+/// Many platforms only need one Sprite, so [T] will be an enum that looks
+/// something like: `enum { only }`
 abstract class Platform<T> extends SpriteGroupComponent<T>
     with HasGameRef<DoodleDash>, CollisionCallbacks {
   final hitbox = RectangleHitbox();
+  bool isMoving = false;
 
   Platform({
     super.position,
@@ -23,6 +33,40 @@ abstract class Platform<T> extends SpriteGroupComponent<T>
 
     // Add collision detection logic
     await add(hitbox);
+
+    // 1/100 times make this platform move
+    final int rand = Random().nextInt(100);
+    if (rand > 80) isMoving = true;
+  }
+
+  // These variables and the _move method all the platform for _move
+  // Platforms have a 20% chance of being a moving platform
+  // All platforms _can_ move.
+  double direction = 1;
+  final Vector2 _velocity = Vector2.zero();
+  double speed = 35;
+
+  void _move(double dt) {
+    if (!isMoving) return;
+
+    final double gameWidth = gameRef.size.x;
+
+    if (position.x <= 0) {
+      direction = 1;
+    } else if (position.x >= gameWidth - size.x) {
+      direction = -1;
+    }
+
+    _velocity.x = direction * speed;
+
+    position += _velocity * dt;
+  }
+
+  @mustCallSuper
+  @override
+  void update(double dt) {
+    _move(dt);
+    super.update(dt);
   }
 }
 
@@ -40,48 +84,6 @@ class NormalPlatform extends Platform<NormalPlatformState> {
 
     current = NormalPlatformState.only;
     await super.onLoad();
-  }
-}
-
-enum MovingPlatformState { only }
-
-class MovingPlatform extends Platform<MovingPlatformState> {
-  MovingPlatform({super.position});
-
-  final Vector2 _velocity = Vector2.zero();
-  double direction = 1;
-  double speed = 35;
-  Random random = Random();
-
-  @override
-  Future<void>? onLoad() async {
-    sprites = {
-      MovingPlatformState.only:
-          await gameRef.loadSprite('game/sand_platform.png')
-    };
-
-    current = MovingPlatformState.only;
-
-    final List<double> directions = [-1, 1];
-    direction = directions[random.nextInt(2)];
-
-    speed = random.nextInt(50) + 20;
-    await super.onLoad();
-  }
-
-  @override
-  void update(double dt) {
-    final double gameWidth = gameRef.size.x;
-
-    if (position.x <= 0) {
-      direction = 1;
-    } else if (position.x >= gameWidth - size.x) {
-      direction = -1;
-    }
-
-    _velocity.x = direction * speed;
-
-    position += _velocity * dt;
   }
 }
 
@@ -147,5 +149,23 @@ class SpringBoard extends Platform<SpringState> {
     super.onCollisionEnd(other);
 
     current = SpringState.up;
+  }
+}
+
+enum EnemyPlatformState { only }
+
+// Enemies are just Platforms that you shouldn't touch
+class EnemyPlatform extends Platform<EnemyPlatformState> {
+  EnemyPlatform({super.position});
+
+  @override
+  Future<void>? onLoad() async {
+    sprites = <EnemyPlatformState, Sprite>{
+      EnemyPlatformState.only: await gameRef.loadSprite('game/trash_can.png'),
+    };
+
+    current = EnemyPlatformState.only;
+
+    return super.onLoad();
   }
 }
