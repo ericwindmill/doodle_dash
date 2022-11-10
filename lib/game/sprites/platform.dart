@@ -23,7 +23,7 @@ abstract class Platform<T> extends SpriteGroupComponent<T>
   Platform({
     super.position,
   }) : super(
-          size: Vector2.all(75),
+          size: Vector2.all(100),
           priority: 2, // Ensures platform is always behind Dash
         );
 

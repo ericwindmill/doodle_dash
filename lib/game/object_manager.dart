@@ -95,7 +95,7 @@ class ObjectManager extends Component with HasGameRef<DoodleDash> {
       }
 
       _maybeAddPowerup();
-      // _maybeAddEnemy();
+      _maybeAddEnemy();
     }
 
     super.update(dt);
@@ -204,9 +204,9 @@ class ObjectManager extends Component with HasGameRef<DoodleDash> {
   }
 
   void _maybeAddEnemy() {
-    // There will be 5 - 25% added to the probabilibity based on the current
+    // There will be 2 - 10% added to the probabilibity based on the current
     // difficulty. i.e. level 1 adds 5% and level 5 adds 25%
-    var basePercentageAddedFromDifficulty = difficultyMultiplier * 5;
+    var basePercentageAddedFromDifficulty = difficultyMultiplier * 2;
     var nextInt = _rand.nextInt(100) + basePercentageAddedFromDifficulty;
     if (nextInt > 95) {
       var trashcan = EnemyPlatform(

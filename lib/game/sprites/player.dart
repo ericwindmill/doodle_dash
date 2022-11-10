@@ -7,7 +7,7 @@ import 'package:flutter/services.dart';
 import '../doodle_dash.dart';
 import 'sprites.dart';
 
-enum PlayerState { left, right, center, jetpack, noogler }
+enum PlayerState { left, right, center, jetpack, noogler_left, noogler_right }
 
 class Player extends SpriteGroupComponent<PlayerState>
     with HasGameRef<DoodleDash>, KeyboardHandler, CollisionCallbacks {
@@ -72,15 +72,21 @@ class Player extends SpriteGroupComponent<PlayerState>
     _hAxisInput = 0;
 
     if (keysPressed.contains(LogicalKeyboardKey.arrowLeft)) {
-      if (current != PlayerState.jetpack) {
+      if (!hasPowerup) {
         current = PlayerState.left;
+      }
+      if (isWearingHat) {
+        current = PlayerState.noogler_left;
       }
       _hAxisInput += -1;
     }
 
     if (keysPressed.contains(LogicalKeyboardKey.arrowRight)) {
-      if (current != PlayerState.jetpack) {
+      if (!hasPowerup) {
         current = PlayerState.right;
+      }
+      if (isWearingHat) {
+        current = PlayerState.noogler_right;
       }
       _hAxisInput += 1;
     }
@@ -96,9 +102,15 @@ class Player extends SpriteGroupComponent<PlayerState>
   bool get isMovingDown => _velocity.y > 0;
 
   bool get hasPowerup =>
-      current == PlayerState.jetpack || current == PlayerState.noogler;
+      current == PlayerState.jetpack ||
+      current == PlayerState.noogler_left ||
+      current == PlayerState.noogler_right;
 
   bool get isInvincible => current == PlayerState.jetpack;
+
+  bool get isWearingHat =>
+      current == PlayerState.noogler_left ||
+      current == PlayerState.noogler_right;
 
   // Callback for Dash colliding with another component in the game
   @override
@@ -136,7 +148,8 @@ class Player extends SpriteGroupComponent<PlayerState>
         current = PlayerState.jetpack;
         jump(specialJumpSpeed: jumpSpeed * other.jumpSpeedMultiplier);
       } else if (other is NooglerHat) {
-        current = PlayerState.noogler;
+        if (current == PlayerState.left) current = PlayerState.noogler_left;
+        if (current == PlayerState.right) current = PlayerState.noogler_right;
         _removePowerupAfterTime(other.activeLengthInMS);
         jump(specialJumpSpeed: jumpSpeed * other.jumpSpeedMultiplier);
       }
@@ -167,15 +180,18 @@ class Player extends SpriteGroupComponent<PlayerState>
     final center =
         await gameRef.loadSprite('game/${character.name}_center.png');
     final jetpack = await gameRef.loadSprite('game/rocket_4.png');
-    final noogler =
+    final nooglerLeft =
         await gameRef.loadSprite('game/${character.name}_hat_left.png');
+    final nooglerRight =
+        await gameRef.loadSprite('game/${character.name}_hat_right.png');
 
     sprites = <PlayerState, Sprite>{
       PlayerState.left: left,
       PlayerState.right: right,
       PlayerState.center: center,
       PlayerState.jetpack: jetpack,
-      PlayerState.noogler: noogler,
+      PlayerState.noogler_left: nooglerLeft,
+      PlayerState.noogler_right: nooglerRight,
     };
   }
 }

@@ -32,7 +32,6 @@ class _MainMenuOverlayState extends State<MainMenuOverlay> {
       final bool screenHeightIsSmall = constraints.maxHeight < 760;
 
       return Material(
-        color: Palette.background,
         child: Padding(
           padding: const EdgeInsets.all(24.0),
           child: Center(
@@ -44,7 +43,6 @@ class _MainMenuOverlayState extends State<MainMenuOverlay> {
                   Text(
                     'Doodle Dash',
                     style: titleStyle.copyWith(
-                      color: Palette.lightText,
                       height: .8,
                     ),
                     textAlign: TextAlign.center,
@@ -52,13 +50,8 @@ class _MainMenuOverlayState extends State<MainMenuOverlay> {
                   const WhiteSpace(),
                   Align(
                     alignment: Alignment.center,
-                    child: Text(
-                      'Select your character:',
-                      style: Theme.of(context)
-                          .textTheme
-                          .headlineSmall!
-                          .copyWith(color: Palette.lightText),
-                    ),
+                    child: Text('Select your character:',
+                        style: Theme.of(context).textTheme.headlineSmall!),
                   ),
                   if (!screenHeightIsSmall) const WhiteSpace(height: 30),
                   Row(
@@ -70,24 +63,6 @@ class _MainMenuOverlayState extends State<MainMenuOverlay> {
                             character = Character.dash;
                           });
                         },
-                        style: ButtonStyle(
-                          side: MaterialStateProperty.all(
-                            const BorderSide(color: Colors.black38, width: 2),
-                          ),
-                          backgroundColor:
-                              MaterialStateProperty.resolveWith<Color>(
-                            (states) {
-                              if (states.contains(MaterialState.hovered)) {
-                                return Palette.spaceLight;
-                              }
-                              if (character != null &&
-                                  character == Character.dash) {
-                                return Palette.spaceLight;
-                              }
-                              return Palette.spaceMedium;
-                            },
-                          ),
-                        ),
                         child: Padding(
                           padding: const EdgeInsets.all(24.0),
                           child: Column(
@@ -112,24 +87,6 @@ class _MainMenuOverlayState extends State<MainMenuOverlay> {
                             character = Character.sparky;
                           });
                         },
-                        style: ButtonStyle(
-                          side: MaterialStateProperty.all(
-                            const BorderSide(color: Colors.black38, width: 2),
-                          ),
-                          backgroundColor:
-                              MaterialStateProperty.resolveWith<Color>(
-                            (states) {
-                              if (states.contains(MaterialState.hovered)) {
-                                return Palette.spaceLight;
-                              }
-                              if (character != null &&
-                                  character == Character.sparky) {
-                                return Palette.spaceLight;
-                              }
-                              return Palette.spaceMedium;
-                            },
-                          ),
-                        ),
                         child: Padding(
                           padding: const EdgeInsets.all(24.0),
                           child: Column(
@@ -154,18 +111,10 @@ class _MainMenuOverlayState extends State<MainMenuOverlay> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Text(
-                        'Difficulty:',
-                        style: Theme.of(context)
-                            .textTheme
-                            .bodyLarge!
-                            .copyWith(color: Palette.lightText),
-                      ),
+                      Text('Difficulty:',
+                          style: Theme.of(context).textTheme.bodyLarge!),
                       Expanded(
                         child: Slider(
-                          thumbColor: Palette.accent,
-                          activeColor: Palette.active,
-                          inactiveColor: Palette.inactive,
                           value: (widget.game as DoodleDash).level.toDouble(),
                           max: 5,
                           min: 1,

@@ -15,7 +15,6 @@ class GameOverOverlay extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Material(
-      color: Colors.black87,
       child: Center(
         child: Padding(
           padding: const EdgeInsets.all(48.0),
@@ -25,9 +24,7 @@ class GameOverOverlay extends StatelessWidget {
             children: [
               Text(
                 'Game Over',
-                style: Theme.of(context).textTheme.displayMedium!.copyWith(
-                      color: Palette.lightText,
-                    ),
+                style: Theme.of(context).textTheme.displayMedium!.copyWith(),
               ),
               const WhiteSpace(height: 50),
               ScoreDisplay(
