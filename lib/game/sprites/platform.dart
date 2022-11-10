@@ -23,7 +23,7 @@ abstract class Platform<T> extends SpriteGroupComponent<T>
   Platform({
     super.position,
   }) : super(
-          size: Vector2.all(50),
+          size: Vector2.all(75),
           priority: 2, // Ensures platform is always behind Dash
         );
 
@@ -75,11 +75,20 @@ enum NormalPlatformState { only }
 class NormalPlatform extends Platform<NormalPlatformState> {
   NormalPlatform({super.position});
 
+  final List<String> spriteOptions = [
+    'platform_monitor',
+    'platform_phone_center',
+    'platform_terminal',
+    'platform_laptop',
+  ];
+
   @override
   Future<void>? onLoad() async {
+    var randSprite = Random().nextInt(spriteOptions.length);
+
     sprites = {
       NormalPlatformState.only:
-          await gameRef.loadSprite('game/grass_platform.png')
+          await gameRef.loadSprite('game/${spriteOptions[randSprite]}.png')
     };
 
     current = NormalPlatformState.only;
@@ -98,9 +107,9 @@ class BrokenPlatform extends Platform<BrokenPlatformState> {
 
     sprites = <BrokenPlatformState, Sprite>{
       BrokenPlatformState.cracked:
-          await gameRef.loadSprite('game/cracked_stone_platform.png'),
+          await gameRef.loadSprite('game/platform_cracked_monitor.png'),
       BrokenPlatformState.broken:
-          await gameRef.loadSprite('game/broken_stone_platform.png'),
+          await gameRef.loadSprite('game/platform_monitor_broken.png'),
     };
 
     current = BrokenPlatformState.cracked;
@@ -124,8 +133,10 @@ class SpringBoard extends Platform<SpringState> {
     await super.onLoad();
 
     sprites = <SpringState, Sprite>{
-      SpringState.down: await gameRef.loadSprite('game/springboardDown.png'),
-      SpringState.up: await gameRef.loadSprite('game/springboardUp.png'),
+      SpringState.down:
+          await gameRef.loadSprite('game/platform_trampoline_down.png'),
+      SpringState.up:
+          await gameRef.loadSprite('game/platform_trampoline_up.png'),
     };
 
     current = SpringState.up;
@@ -160,8 +171,12 @@ class EnemyPlatform extends Platform<EnemyPlatformState> {
 
   @override
   Future<void>? onLoad() async {
+    var randBool = Random().nextBool();
+    var enemySprite = randBool ? 'enemy_trash_can' : 'enemy_error';
+
     sprites = <EnemyPlatformState, Sprite>{
-      EnemyPlatformState.only: await gameRef.loadSprite('game/trash_can.png'),
+      EnemyPlatformState.only:
+          await gameRef.loadSprite('game/$enemySprite.png'),
     };
 
     current = EnemyPlatformState.only;

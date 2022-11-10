@@ -13,7 +13,7 @@ class Player extends SpriteGroupComponent<PlayerState>
     with HasGameRef<DoodleDash>, KeyboardHandler, CollisionCallbacks {
   Player({super.position, required this.character, this.jumpSpeed = 600})
       : super(
-          size: Vector2.all(100),
+          size: Vector2(79, 109),
           anchor: Anchor.center,
           priority: 1,
         );
@@ -162,13 +162,13 @@ class Player extends SpriteGroupComponent<PlayerState>
 
   Future<void> _loadCharacterSprites() async {
     // Load & configure sprite assets
-    final left = await gameRef.loadSprite('game/left_${character.name}.png');
-    final right = await gameRef.loadSprite('game/right_${character.name}.png');
-    final center = await gameRef.loadSprite('game/left_${character.name}.png');
-    final jetpack =
-        await gameRef.loadSprite('game/jetpack_${character.name}.png');
+    final left = await gameRef.loadSprite('game/${character.name}_left.png');
+    final right = await gameRef.loadSprite('game/${character.name}_right.png');
+    final center =
+        await gameRef.loadSprite('game/${character.name}_center.png');
+    final jetpack = await gameRef.loadSprite('game/rocket_4.png');
     final noogler =
-        await gameRef.loadSprite('game/noogler_${character.name}.png');
+        await gameRef.loadSprite('game/${character.name}_hat_left.png');
 
     sprites = <PlayerState, Sprite>{
       PlayerState.left: left,
