@@ -1,5 +1,6 @@
 import 'package:flame/game.dart';
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 import 'game/doodle_dash.dart';
 import 'game/util/util.dart';
@@ -15,9 +16,16 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Doodle Dash',
+      themeMode: ThemeMode.dark,
       theme: ThemeData(
+        colorScheme: lightColorScheme,
+        useMaterial3: true,
+        // textTheme: appFontTheme,
+      ),
+      darkTheme: ThemeData(
         colorScheme: darkColorScheme,
-        textTheme: appFontTheme,
+        textTheme: GoogleFonts.audiowideTextTheme(ThemeData.dark().textTheme),
+        useMaterial3: true,
       ),
       home: const MyHomePage(title: 'Doodle Dash'),
     );
@@ -37,7 +45,6 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Palette.accent,
       body: Center(
         child: LayoutBuilder(builder: (context, constraints) {
           return Container(

@@ -15,12 +15,8 @@ class ScoreDisplay extends StatelessWidget {
     return ValueListenableBuilder(
       valueListenable: (game as DoodleDash).score,
       builder: (context, value, child) {
-        return Text(
-          'Score: $value',
-          style: Theme.of(context).textTheme.displaySmall!.copyWith(
-                color: isLight ? Palette.lightText : Palette.darkText,
-              ),
-        );
+        return Text('Score: $value',
+            style: Theme.of(context).textTheme.displaySmall!);
       },
     );
   }

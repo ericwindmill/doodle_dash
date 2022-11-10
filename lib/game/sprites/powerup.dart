@@ -34,7 +34,7 @@ class Jetpack extends PowerUp {
   @override
   Future<void>? onLoad() async {
     await super.onLoad();
-    sprite = await gameRef.loadSprite('game/torchLit.png');
+    sprite = await gameRef.loadSprite('game/rocket_2.png');
   }
 }
 
