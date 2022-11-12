@@ -68,7 +68,7 @@ class _MainMenuOverlayState extends State<MainMenuOverlay> {
                           child: Column(
                             children: [
                               Image.asset(
-                                'assets/images/game/dash_left.png',
+                                'assets/images/game/dash_center.png',
                                 height: characterWidth,
                                 width: characterWidth,
                               ),
@@ -92,7 +92,7 @@ class _MainMenuOverlayState extends State<MainMenuOverlay> {
                           child: Column(
                             children: [
                               Image.asset(
-                                'assets/images/game/sparky_right.png',
+                                'assets/images/game/sparky_center.png',
                                 height: characterWidth,
                                 width: characterWidth,
                               ),
