@@ -20,7 +20,7 @@ class GameOverOverlay extends StatelessWidget {
           padding: const EdgeInsets.all(48.0),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               Text(
                 'Game Over',
