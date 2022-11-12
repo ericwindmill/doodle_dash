@@ -195,11 +195,11 @@ class ObjectManager extends Component with HasGameRef<DoodleDash> {
 
     // There is a 5% chance to add a jetpack
     if (nextInt.between(95, 100)) {
-      var jetpack = Jetpack(
+      var rocket = Rocket(
         position: Vector2(_generateNextX(), _generateNextY()),
       );
-      add(jetpack);
-      _powerups.add(jetpack);
+      add(rocket);
+      _powerups.add(rocket);
     }
   }
 

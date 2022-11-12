@@ -7,7 +7,7 @@ import 'package:flutter/services.dart';
 import '../doodle_dash.dart';
 import 'sprites.dart';
 
-enum PlayerState { left, right, center, jetpack, noogler_left, noogler_right }
+enum PlayerState { left, right, center, rocket, noogler_left, noogler_right }
 
 class Player extends SpriteGroupComponent<PlayerState>
     with HasGameRef<DoodleDash>, KeyboardHandler, CollisionCallbacks {
@@ -102,11 +102,11 @@ class Player extends SpriteGroupComponent<PlayerState>
   bool get isMovingDown => _velocity.y > 0;
 
   bool get hasPowerup =>
-      current == PlayerState.jetpack ||
+      current == PlayerState.rocket ||
       current == PlayerState.noogler_left ||
       current == PlayerState.noogler_right;
 
-  bool get isInvincible => current == PlayerState.jetpack;
+  bool get isInvincible => current == PlayerState.rocket;
 
   bool get isWearingHat =>
       current == PlayerState.noogler_left ||
@@ -144,8 +144,8 @@ class Player extends SpriteGroupComponent<PlayerState>
     }
 
     if (!hasPowerup) {
-      if (other is Jetpack) {
-        current = PlayerState.jetpack;
+      if (other is Rocket) {
+        current = PlayerState.rocket;
         jump(specialJumpSpeed: jumpSpeed * other.jumpSpeedMultiplier);
       } else if (other is NooglerHat) {
         if (current == PlayerState.left) current = PlayerState.noogler_left;
@@ -179,7 +179,7 @@ class Player extends SpriteGroupComponent<PlayerState>
     final right = await gameRef.loadSprite('game/${character.name}_right.png');
     final center =
         await gameRef.loadSprite('game/${character.name}_center.png');
-    final jetpack = await gameRef.loadSprite('game/rocket_4.png');
+    final rocket = await gameRef.loadSprite('game/rocket_4.png');
     final nooglerLeft =
         await gameRef.loadSprite('game/${character.name}_hat_left.png');
     final nooglerRight =
@@ -189,7 +189,7 @@ class Player extends SpriteGroupComponent<PlayerState>
       PlayerState.left: left,
       PlayerState.right: right,
       PlayerState.center: center,
-      PlayerState.jetpack: jetpack,
+      PlayerState.rocket: rocket,
       PlayerState.noogler_left: nooglerLeft,
       PlayerState.noogler_right: nooglerRight,
     };

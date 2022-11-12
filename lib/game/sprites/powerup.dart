@@ -23,18 +23,19 @@ abstract class PowerUp extends SpriteComponent
   }
 }
 
-class Jetpack extends PowerUp {
+class Rocket extends PowerUp {
   @override
   double get jumpSpeedMultiplier => 3.5;
 
-  Jetpack({
+  Rocket({
     super.position,
   });
 
   @override
   Future<void>? onLoad() async {
     await super.onLoad();
-    sprite = await gameRef.loadSprite('game/rocket_2.png');
+    sprite = await gameRef.loadSprite('game/rocket_1.png');
+    size = Vector2(50, 70);
   }
 }
 
@@ -52,6 +53,6 @@ class NooglerHat extends PowerUp {
   Future<void>? onLoad() async {
     await super.onLoad();
     sprite = await gameRef.loadSprite('game/noogler_hat.png');
-    size = Vector2(50, 30);
+    size = Vector2(75, 50);
   }
 }

@@ -75,23 +75,26 @@ enum NormalPlatformState { only }
 class NormalPlatform extends Platform<NormalPlatformState> {
   NormalPlatform({super.position});
 
-  final List<String> spriteOptions = [
-    'platform_monitor',
-    'platform_phone_center',
-    'platform_terminal',
-    'platform_laptop',
-  ];
+  final Map<String, Vector2> spriteOptions = {
+    'platform_monitor': Vector2(115, 84),
+    'platform_phone_center': Vector2(100, 55),
+    'platform_terminal': Vector2(110, 83),
+    'platform_laptop': Vector2(100, 63),
+  };
 
   @override
   Future<void>? onLoad() async {
-    var randSprite = Random().nextInt(spriteOptions.length);
+    var randSpriteIndex = Random().nextInt(spriteOptions.length);
+
+    String randSprite = spriteOptions.keys.elementAt(randSpriteIndex);
 
     sprites = {
-      NormalPlatformState.only:
-          await gameRef.loadSprite('game/${spriteOptions[randSprite]}.png')
+      NormalPlatformState.only: await gameRef.loadSprite('game/$randSprite.png')
     };
 
     current = NormalPlatformState.only;
+
+    size = spriteOptions[randSprite]!;
     await super.onLoad();
   }
 }
@@ -113,6 +116,7 @@ class BrokenPlatform extends Platform<BrokenPlatformState> {
     };
 
     current = BrokenPlatformState.cracked;
+    size = Vector2(115, 84);
   }
 
   void breakPlatform() {
@@ -140,6 +144,8 @@ class SpringBoard extends Platform<SpringState> {
     };
 
     current = SpringState.up;
+
+    size = Vector2(100, 45);
   }
 
   @override
