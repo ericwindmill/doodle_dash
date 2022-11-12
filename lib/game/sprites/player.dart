@@ -121,7 +121,7 @@ class Player extends SpriteGroupComponent<PlayerState>
     // this allows Dash to move up _through_ platforms without collision
     bool isMovingDown = _velocity.y > 0;
     bool isCollidingVertically =
-        (intersectionPoints.first.y - intersectionPoints.last.y).abs() < 8;
+        (intersectionPoints.first.y - intersectionPoints.last.y).abs() < 5;
 
     if (isMovingDown && hasPowerup) {
       current = PlayerState.center;
