@@ -47,7 +47,7 @@ class ObjectManager extends Component with HasGameRef<DoodleDash> {
     // to be populated in the game.
     for (var i = 0; i < 9; i++) {
       if (i != 0) {
-        currentX = _generateNextX();
+        currentX = _generateNextX(100);
         currentY = _generateNextY();
       }
       _platforms.add(
@@ -79,7 +79,7 @@ class ObjectManager extends Component with HasGameRef<DoodleDash> {
     if (topOfLowestPlatform > screenBottom) {
       // Generate and add the next platform to the game
       var newPlatY = _generateNextY();
-      var newPlatX = _generateNextX();
+      var newPlatX = _generateNextX(100);
       final nextPlat = _semiRandomPlatform(Vector2(newPlatX, newPlatY));
       add(nextPlat);
 
@@ -158,8 +158,7 @@ class ObjectManager extends Component with HasGameRef<DoodleDash> {
     }
   }
 
-  double _generateNextX() {
-    final platformWidth = _platforms.last.size.x;
+  double _generateNextX(int platformWidth) {
     // Used to ensure that the next platform doesn't overlap
     final previousPlatformXRange = Range(
       _platforms.last.position.x,
@@ -175,7 +174,7 @@ class ObjectManager extends Component with HasGameRef<DoodleDash> {
     // If the previous platform and next overlap, try a new random X
     do {
       nextPlatformAnchorX =
-          _rand.nextInt(gameRef.size.x.floor() - 50).toDouble();
+          _rand.nextInt(gameRef.size.x.floor() - platformWidth).toDouble();
     } while (previousPlatformXRange.overlaps(
         Range(nextPlatformAnchorX, nextPlatformAnchorX + platformWidth)));
 
@@ -226,7 +225,7 @@ class ObjectManager extends Component with HasGameRef<DoodleDash> {
         probGen.generateWithProbability(20)) {
       // generate powerup
       var nooglerHat = NooglerHat(
-        position: Vector2(_generateNextX(), _generateNextY()),
+        position: Vector2(_generateNextX(75), _generateNextY()),
       );
       add(nooglerHat);
       _powerups.add(nooglerHat);
@@ -237,7 +236,7 @@ class ObjectManager extends Component with HasGameRef<DoodleDash> {
     if (specialPlatforms['rocket'] == true &&
         probGen.generateWithProbability(15)) {
       var rocket = Rocket(
-        position: Vector2(_generateNextX(), _generateNextY()),
+        position: Vector2(_generateNextX(50), _generateNextY()),
       );
       add(rocket);
       _powerups.add(rocket);
@@ -251,7 +250,7 @@ class ObjectManager extends Component with HasGameRef<DoodleDash> {
     }
     if (probGen.generateWithProbability(20)) {
       var enemy = EnemyPlatform(
-        position: Vector2(_generateNextX(), _generateNextY()),
+        position: Vector2(_generateNextX(100), _generateNextY()),
       );
       add(enemy);
       _enemies.add(enemy);
