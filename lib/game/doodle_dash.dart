@@ -146,6 +146,7 @@ class DoodleDash extends FlameGame
     initializeGameStart();
     state = GameState.playing;
     overlays.remove('mainMenuOverlay');
+    player.setJumpSpeed(levels[level]!.jumpSpeed);
   }
 
   void resetGame() {

@@ -148,6 +148,13 @@ class ObjectManager extends Component with HasGameRef<DoodleDash> {
       for (int i = 1; i <= nextLevel; i++) {
         enableLevelSpecialty(i);
       }
+
+      // TODO: This logic should move out of object manager and into doodle_dash
+      try {
+        gameRef.player.setJumpSpeed(levels[nextLevel]!.jumpSpeed);
+      } catch (error) {
+        print('oops not initialized!');
+      }
     }
   }
 

@@ -169,8 +169,8 @@ class Player extends SpriteGroupComponent<PlayerState>
     _velocity.y = specialJumpSpeed != null ? -specialJumpSpeed : -jumpSpeed;
   }
 
-  void setJumpSpeed(double jumpSpeed) {
-    jumpSpeed = jumpSpeed;
+  void setJumpSpeed(double newJumpSpeed) {
+    jumpSpeed = newJumpSpeed;
   }
 
   Future<void> _loadCharacterSprites() async {
