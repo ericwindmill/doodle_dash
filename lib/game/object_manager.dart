@@ -18,6 +18,7 @@ class ObjectManager extends Component with HasGameRef<DoodleDash> {
   double minVerticalDistanceToNextPlatform;
   double maxVerticalDistanceToNextPlatform;
   int difficultyMultiplier;
+  final probGen = ProbabilityGenerator();
   final List<Platform> _platforms = [];
   final List<PowerUp> _powerups = [];
   final List<EnemyPlatform> _enemies = [];
@@ -196,15 +197,14 @@ class ObjectManager extends Component with HasGameRef<DoodleDash> {
   // Return a platform.
   // The percent chance of any given platform is NOT equal
   Platform _semiRandomPlatform(Vector2 position) {
-    // Get a number from 1 to 100 (incl)
-    var nextInt = _rand.nextInt(100) + 1;
-
-    if (specialPlatforms['spring'] == true && nextInt.between(1, 15)) {
+    if (specialPlatforms['spring'] == true &&
+        probGen.generateWithProbability(15)) {
       // 15% chance of getting springboard
       return SpringBoard(position: position);
     }
 
-    if (specialPlatforms['broken'] == true && nextInt.between(15, 25)) {
+    if (specialPlatforms['broken'] == true &&
+        probGen.generateWithProbability(10)) {
       // 10% chance of getting springboard
       return BrokenPlatform(position: position);
     }
@@ -214,10 +214,9 @@ class ObjectManager extends Component with HasGameRef<DoodleDash> {
   }
 
   void _maybeAddPowerup() {
-    var nextIntNoogler = _rand.nextInt(100);
-
     // there is a 20% chance to add a Noogler Hat
-    if (specialPlatforms['noogler'] == true && nextIntNoogler.between(1, 20)) {
+    if (specialPlatforms['noogler'] == true &&
+        probGen.generateWithProbability(20)) {
       // generate powerup
       var nooglerHat = NooglerHat(
         position: Vector2(_generateNextX(), _generateNextY()),
@@ -227,10 +226,9 @@ class ObjectManager extends Component with HasGameRef<DoodleDash> {
       return; // return early if we already add a noogler hat, no need to add a rocket
     }
 
-    var nextIntRocket = _rand.nextInt(100);
-
     // There is a 15% chance to add a jetpack
-    if (specialPlatforms['rocket'] == true && nextIntRocket.between(20, 35)) {
+    if (specialPlatforms['rocket'] == true &&
+        probGen.generateWithProbability(15)) {
       var rocket = Rocket(
         position: Vector2(_generateNextX(), _generateNextY()),
       );
@@ -244,17 +242,12 @@ class ObjectManager extends Component with HasGameRef<DoodleDash> {
     if (specialPlatforms['enemy'] != true) {
       return;
     }
-
-    // There will be 2 - 10% added to the probabilibity based on the current
-    // difficulty. i.e. level 1 adds 5% and level 5 adds 25%
-    var basePercentageAddedFromDifficulty = difficultyMultiplier * 2;
-    var nextInt = _rand.nextInt(100) + basePercentageAddedFromDifficulty;
-    if (nextInt > 95) {
-      var trashcan = EnemyPlatform(
+    if (probGen.generateWithProbability(20)) {
+      var enemy = EnemyPlatform(
         position: Vector2(_generateNextX(), _generateNextY()),
       );
-      add(trashcan);
-      _enemies.add(trashcan);
+      add(enemy);
+      _enemies.add(enemy);
       _cleanup();
     }
   }
