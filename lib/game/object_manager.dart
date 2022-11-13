@@ -272,7 +272,9 @@ class ObjectManager extends Component with HasGameRef<DoodleDash> {
     }
 
     while (_powerups.isNotEmpty && _powerups.first.position.y > screenBottom) {
-      remove(_powerups.first);
+      if (_powerups.first.parent != null) {
+        remove(_powerups.first);
+      }
       _powerups.removeAt(0);
     }
   }

@@ -1,6 +1,7 @@
 import 'package:flame/collisions.dart';
 import 'package:flame/components.dart';
 
+import './player.dart';
 import '../doodle_dash.dart';
 
 abstract class PowerUp extends SpriteComponent
@@ -20,6 +21,14 @@ abstract class PowerUp extends SpriteComponent
     await super.onLoad();
     // collision detection logic
     await add(hitbox);
+  }
+
+  @override
+  void onCollision(Set<Vector2> intersectionPoints, PositionComponent other) {
+    if (other is Player && !other.isInvincible && !other.isWearingHat) {
+      removeFromParent();
+    }
+    super.onCollision(intersectionPoints, other);
   }
 }
 
