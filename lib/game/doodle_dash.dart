@@ -19,7 +19,7 @@ class DoodleDash extends FlameGame
   final World _world = World();
   ObjectManager objectManager = ObjectManager();
 
-  int screenBufferSpace = 200;
+  int screenBufferSpace = 300;
   GameState state = GameState.intro;
   bool get isPlaying => state == GameState.playing;
   bool get isGameOver => state == GameState.gameOver;
