@@ -123,10 +123,11 @@ class DoodleDash extends FlameGame
 
     // reset the the platforms
     objectManager = ObjectManager(
-      minVerticalDistanceToNextPlatform: levels[level]!.minDistance,
-      maxVerticalDistanceToNextPlatform: levels[level]!.maxDistance,
-      difficultyMultiplier: level,
-    );
+        minVerticalDistanceToNextPlatform: levels[level]!.minDistance,
+        maxVerticalDistanceToNextPlatform: levels[level]!.maxDistance);
+
+    objectManager.increaseDifficulty(level);
+
     add(objectManager);
   }
 
@@ -139,13 +140,13 @@ class DoodleDash extends FlameGame
 
   void selectDifficulty(int level) {
     this.level = level;
-    objectManager.increaseDifficulty(level);
   }
 
   void startGame() {
     initializeGameStart();
     state = GameState.playing;
     overlays.remove('mainMenuOverlay');
+    player.setJumpSpeed(levels[level]!.jumpSpeed);
   }
 
   void resetGame() {

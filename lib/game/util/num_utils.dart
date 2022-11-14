@@ -1,3 +1,5 @@
+import 'dart:math';
+
 class Range {
   final double start;
   final double end;
@@ -17,5 +19,21 @@ class Range {
 extension Between on num {
   bool between(num floor, num ceiling) {
     return this > floor && this <= ceiling;
+  }
+}
+
+class ProbabilityGenerator {
+  final Random _rand = Random();
+
+  ProbabilityGenerator();
+
+  bool generateWithProbability(double percent) {
+    var randomInt = _rand.nextInt(100) + 1; // generate a number 1-100 inclusive
+
+    if (randomInt <= percent) {
+      return true;
+    }
+
+    return false;
   }
 }

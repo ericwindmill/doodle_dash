@@ -51,7 +51,7 @@ class _MyHomePageState extends State<MyHomePage> {
             constraints: const BoxConstraints(
               // 1000 is arbitrary, should be tweaked (todo eric)
               // 550 is the smallest Chrome will allow you to make the window
-              maxWidth: 1000,
+              maxWidth: 800,
               minWidth: 550,
             ),
             child: GameWidget(

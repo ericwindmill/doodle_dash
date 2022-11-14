@@ -1,6 +1,7 @@
 import 'package:flame/collisions.dart';
 import 'package:flame/components.dart';
 
+import './player.dart';
 import '../doodle_dash.dart';
 
 abstract class PowerUp extends SpriteComponent
@@ -21,20 +22,29 @@ abstract class PowerUp extends SpriteComponent
     // collision detection logic
     await add(hitbox);
   }
+
+  @override
+  void onCollision(Set<Vector2> intersectionPoints, PositionComponent other) {
+    if (other is Player && !other.isInvincible && !other.isWearingHat) {
+      removeFromParent();
+    }
+    super.onCollision(intersectionPoints, other);
+  }
 }
 
-class Jetpack extends PowerUp {
+class Rocket extends PowerUp {
   @override
   double get jumpSpeedMultiplier => 3.5;
 
-  Jetpack({
+  Rocket({
     super.position,
   });
 
   @override
   Future<void>? onLoad() async {
     await super.onLoad();
-    sprite = await gameRef.loadSprite('game/rocket_2.png');
+    sprite = await gameRef.loadSprite('game/rocket_1.png');
+    size = Vector2(50, 70);
   }
 }
 
@@ -52,6 +62,6 @@ class NooglerHat extends PowerUp {
   Future<void>? onLoad() async {
     await super.onLoad();
     sprite = await gameRef.loadSprite('game/noogler_hat.png');
-    size = Vector2(50, 30);
+    size = Vector2(75, 50);
   }
 }

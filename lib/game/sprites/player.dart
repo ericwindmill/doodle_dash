@@ -7,7 +7,7 @@ import 'package:flutter/services.dart';
 import '../doodle_dash.dart';
 import 'sprites.dart';
 
-enum PlayerState { left, right, center, jetpack, noogler_left, noogler_right }
+enum PlayerState { left, right, center, rocket, noogler_left, noogler_right }
 
 class Player extends SpriteGroupComponent<PlayerState>
     with HasGameRef<DoodleDash>, KeyboardHandler, CollisionCallbacks {
@@ -49,9 +49,9 @@ class Player extends SpriteGroupComponent<PlayerState>
 
     // infinite side boundaries if Dash's body is off the screen (position is from center)
     if (position.x < size.x / 2) {
-      position.x = gameRef.size.x + size.x + 10;
+      position.x = gameRef.size.x - (size.x / 2);
     }
-    if (position.x > gameRef.size.x + size.x + 10) {
+    if (position.x > gameRef.size.x - (size.x / 2)) {
       position.x = size.x / 2;
     }
 
@@ -102,11 +102,11 @@ class Player extends SpriteGroupComponent<PlayerState>
   bool get isMovingDown => _velocity.y > 0;
 
   bool get hasPowerup =>
-      current == PlayerState.jetpack ||
+      current == PlayerState.rocket ||
       current == PlayerState.noogler_left ||
       current == PlayerState.noogler_right;
 
-  bool get isInvincible => current == PlayerState.jetpack;
+  bool get isInvincible => current == PlayerState.rocket;
 
   bool get isWearingHat =>
       current == PlayerState.noogler_left ||
@@ -121,7 +121,7 @@ class Player extends SpriteGroupComponent<PlayerState>
     // this allows Dash to move up _through_ platforms without collision
     bool isMovingDown = _velocity.y > 0;
     bool isCollidingVertically =
-        (intersectionPoints.first.y - intersectionPoints.last.y).abs() < 8;
+        (intersectionPoints.first.y - intersectionPoints.last.y).abs() < 5;
 
     if (isMovingDown && hasPowerup) {
       current = PlayerState.center;
@@ -130,9 +130,7 @@ class Player extends SpriteGroupComponent<PlayerState>
     // Only want Dash to  “jump” when she is falling + collides with the top of a platform
     if (isMovingDown && isCollidingVertically) {
       // remove power up once falls down on platform
-      if (other is EnemyPlatform && !isInvincible) {
-        gameRef.onLose();
-      } else if (other is NormalPlatform) {
+      if (other is NormalPlatform) {
         jump();
       } else if (other is SpringBoard) {
         jump(specialJumpSpeed: jumpSpeed * 2);
@@ -143,9 +141,13 @@ class Player extends SpriteGroupComponent<PlayerState>
       }
     }
 
+    if (other is EnemyPlatform && !isInvincible) {
+      gameRef.onLose();
+    }
+
     if (!hasPowerup) {
-      if (other is Jetpack) {
-        current = PlayerState.jetpack;
+      if (other is Rocket) {
+        current = PlayerState.rocket;
         jump(specialJumpSpeed: jumpSpeed * other.jumpSpeedMultiplier);
       } else if (other is NooglerHat) {
         if (current == PlayerState.left) current = PlayerState.noogler_left;
@@ -169,8 +171,8 @@ class Player extends SpriteGroupComponent<PlayerState>
     _velocity.y = specialJumpSpeed != null ? -specialJumpSpeed : -jumpSpeed;
   }
 
-  void setJumpSpeed(double jumpSpeed) {
-    jumpSpeed = jumpSpeed;
+  void setJumpSpeed(double newJumpSpeed) {
+    jumpSpeed = newJumpSpeed;
   }
 
   Future<void> _loadCharacterSprites() async {
@@ -179,7 +181,7 @@ class Player extends SpriteGroupComponent<PlayerState>
     final right = await gameRef.loadSprite('game/${character.name}_right.png');
     final center =
         await gameRef.loadSprite('game/${character.name}_center.png');
-    final jetpack = await gameRef.loadSprite('game/rocket_4.png');
+    final rocket = await gameRef.loadSprite('game/rocket_4.png');
     final nooglerLeft =
         await gameRef.loadSprite('game/${character.name}_hat_left.png');
     final nooglerRight =
@@ -189,7 +191,7 @@ class Player extends SpriteGroupComponent<PlayerState>
       PlayerState.left: left,
       PlayerState.right: right,
       PlayerState.center: center,
-      PlayerState.jetpack: jetpack,
+      PlayerState.rocket: rocket,
       PlayerState.noogler_left: nooglerLeft,
       PlayerState.noogler_right: nooglerRight,
     };

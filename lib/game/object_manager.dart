@@ -18,15 +18,22 @@ class ObjectManager extends Component with HasGameRef<DoodleDash> {
   double minVerticalDistanceToNextPlatform;
   double maxVerticalDistanceToNextPlatform;
   int difficultyMultiplier;
+  final probGen = ProbabilityGenerator();
   final List<Platform> _platforms = [];
   final List<PowerUp> _powerups = [];
   final List<EnemyPlatform> _enemies = [];
   final double _tallestPlatformHeight = 50;
+  final Map<String, bool> specialPlatforms = {
+    'spring': true, // level 1
+    'broken': false, // level 2
+    'noogler': false, // level 3
+    'rocket': false, // level 4
+    'enemy': false, // level 5
+  };
 
   @override
   void onMount() {
     super.onMount();
-    increaseDifficulty(1);
 
     // The X that will be used for the next platform.
     // The initial X is the middle of the screen.
@@ -40,7 +47,7 @@ class ObjectManager extends Component with HasGameRef<DoodleDash> {
     // to be populated in the game.
     for (var i = 0; i < 9; i++) {
       if (i != 0) {
-        currentX = _generateNextX();
+        currentX = _generateNextX(100);
         currentY = _generateNextY();
       }
       _platforms.add(
@@ -72,7 +79,7 @@ class ObjectManager extends Component with HasGameRef<DoodleDash> {
     if (topOfLowestPlatform > screenBottom) {
       // Generate and add the next platform to the game
       var newPlatY = _generateNextY();
-      var newPlatX = _generateNextX();
+      var newPlatX = _generateNextX(100);
       final nextPlat = _semiRandomPlatform(Vector2(newPlatX, newPlatY));
       add(nextPlat);
 
@@ -90,7 +97,7 @@ class ObjectManager extends Component with HasGameRef<DoodleDash> {
 
       int? nextLevel = scoreToLevel[gameRef.score.value];
 
-      if (nextLevel != null && difficultyMultiplier < nextLevel) {
+      if (nextLevel != null) {
         increaseDifficulty(nextLevel);
       }
 
@@ -101,15 +108,57 @@ class ObjectManager extends Component with HasGameRef<DoodleDash> {
     super.update(dt);
   }
 
-  // Exposes a way for the DoodleDash component to increase difficulty mid-game
-  void increaseDifficulty(int nextLevel) {
-    difficultyMultiplier = nextLevel;
-    minVerticalDistanceToNextPlatform = levels[nextLevel]!.minDistance;
-    maxVerticalDistanceToNextPlatform = levels[nextLevel]!.maxDistance;
+  void enableSpecialty(String specialty) {
+    specialPlatforms[specialty] = true;
   }
 
-  double _generateNextX() {
-    final platformWidth = _platforms.last.size.x;
+  void enableLevelSpecialty(int level) {
+    switch (level) {
+      case 1:
+        enableSpecialty('spring');
+        break;
+      case 2:
+        enableSpecialty('broken');
+        break;
+      case 3:
+        enableSpecialty('noogler');
+        break;
+      case 4:
+        enableSpecialty('rocket');
+        break;
+      case 5:
+        enableSpecialty('enemy');
+        break;
+    }
+  }
+
+  void resetSpecialties() {
+    for (var key in specialPlatforms.keys) {
+      specialPlatforms[key] = false;
+    }
+  }
+
+  // Exposes a way for the DoodleDash component to increase difficulty mid-game
+  void increaseDifficulty(int nextLevel) {
+    if (difficultyMultiplier < nextLevel) {
+      difficultyMultiplier = nextLevel;
+      minVerticalDistanceToNextPlatform = levels[nextLevel]!.minDistance;
+      maxVerticalDistanceToNextPlatform = levels[nextLevel]!.maxDistance;
+
+      for (int i = 1; i <= nextLevel; i++) {
+        enableLevelSpecialty(i);
+      }
+
+      // TODO: This logic should move out of object manager and into doodle_dash
+      try {
+        gameRef.player.setJumpSpeed(levels[nextLevel]!.jumpSpeed);
+      } catch (error) {
+        print('oops not initialized!');
+      }
+    }
+  }
+
+  double _generateNextX(int platformWidth) {
     // Used to ensure that the next platform doesn't overlap
     final previousPlatformXRange = Range(
       _platforms.last.position.x,
@@ -125,7 +174,7 @@ class ObjectManager extends Component with HasGameRef<DoodleDash> {
     // If the previous platform and next overlap, try a new random X
     do {
       nextPlatformAnchorX =
-          _rand.nextInt(gameRef.size.x.floor() - 50).toDouble();
+          _rand.nextInt(gameRef.size.x.floor() - platformWidth).toDouble();
     } while (previousPlatformXRange.overlaps(
         Range(nextPlatformAnchorX, nextPlatformAnchorX + platformWidth)));
 
@@ -154,66 +203,57 @@ class ObjectManager extends Component with HasGameRef<DoodleDash> {
   // Return a platform.
   // The percent chance of any given platform is NOT equal
   Platform _semiRandomPlatform(Vector2 position) {
-    // Get a number from 1 to 100 (incl)
-    var nextInt = _rand.nextInt(100) + 1;
-
-    if (nextInt.between(1, 25)) {
-      return NormalPlatform(position: position);
-    }
-
-    if (nextInt.between(25, 50)) {
-      return NormalPlatform(position: position);
-    }
-
-    if (nextInt.between(50, 70)) {
-      return BrokenPlatform(position: position);
-    }
-
-    if (nextInt.between(70, 85)) {
-      return NormalPlatform(position: position);
-    }
-
-    if (nextInt.between(85, 100)) {
+    if (specialPlatforms['spring'] == true &&
+        probGen.generateWithProbability(15)) {
+      // 15% chance of getting springboard
       return SpringBoard(position: position);
     }
 
+    if (specialPlatforms['broken'] == true &&
+        probGen.generateWithProbability(10)) {
+      // 10% chance of getting springboard
+      return BrokenPlatform(position: position);
+    }
+
+    // defaults to a normal platform
     return NormalPlatform(position: position);
   }
 
   void _maybeAddPowerup() {
-    var nextInt = _rand.nextInt(100);
-
-    // there is a 10% chance to add a Noogler Hat
-    if (nextInt.between(80, 90)) {
+    // there is a 20% chance to add a Noogler Hat
+    if (specialPlatforms['noogler'] == true &&
+        probGen.generateWithProbability(20)) {
       // generate powerup
       var nooglerHat = NooglerHat(
-        position: Vector2(_generateNextX(), _generateNextY()),
+        position: Vector2(_generateNextX(75), _generateNextY()),
       );
       add(nooglerHat);
       _powerups.add(nooglerHat);
+      return; // return early if we already add a noogler hat, no need to add a rocket
     }
 
-    // There is a 5% chance to add a jetpack
-    if (nextInt.between(95, 100)) {
-      var jetpack = Jetpack(
-        position: Vector2(_generateNextX(), _generateNextY()),
+    // There is a 15% chance to add a jetpack
+    if (specialPlatforms['rocket'] == true &&
+        probGen.generateWithProbability(15)) {
+      var rocket = Rocket(
+        position: Vector2(_generateNextX(50), _generateNextY()),
       );
-      add(jetpack);
-      _powerups.add(jetpack);
+      add(rocket);
+      _powerups.add(rocket);
     }
   }
 
   void _maybeAddEnemy() {
-    // There will be 2 - 10% added to the probabilibity based on the current
-    // difficulty. i.e. level 1 adds 5% and level 5 adds 25%
-    var basePercentageAddedFromDifficulty = difficultyMultiplier * 2;
-    var nextInt = _rand.nextInt(100) + basePercentageAddedFromDifficulty;
-    if (nextInt > 95) {
-      var trashcan = EnemyPlatform(
-        position: Vector2(_generateNextX(), _generateNextY()),
+    // checks if we should add enemies at the current level
+    if (specialPlatforms['enemy'] != true) {
+      return;
+    }
+    if (probGen.generateWithProbability(20)) {
+      var enemy = EnemyPlatform(
+        position: Vector2(_generateNextX(100), _generateNextY()),
       );
-      add(trashcan);
-      _enemies.add(trashcan);
+      add(enemy);
+      _enemies.add(enemy);
       _cleanup();
     }
   }
@@ -232,7 +272,9 @@ class ObjectManager extends Component with HasGameRef<DoodleDash> {
     }
 
     while (_powerups.isNotEmpty && _powerups.first.position.y > screenBottom) {
-      remove(_powerups.first);
+      if (_powerups.first.parent != null) {
+        remove(_powerups.first);
+      }
       _powerups.removeAt(0);
     }
   }
