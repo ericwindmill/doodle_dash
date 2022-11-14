@@ -58,6 +58,12 @@ class _MainMenuOverlayState extends State<MainMenuOverlay> {
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
                       OutlinedButton(
+                        style: (character == Character.dash)
+                            ? ButtonStyle(
+                                backgroundColor:
+                                    MaterialStateProperty.all<Color>(
+                                        const Color.fromARGB(31, 64, 195, 255)))
+                            : null,
                         onPressed: () {
                           setState(() {
                             character = Character.dash;
@@ -82,6 +88,12 @@ class _MainMenuOverlayState extends State<MainMenuOverlay> {
                         ),
                       ),
                       OutlinedButton(
+                        style: (character == Character.sparky)
+                            ? ButtonStyle(
+                                backgroundColor:
+                                    MaterialStateProperty.all<Color>(
+                                        const Color.fromARGB(31, 64, 195, 255)))
+                            : null,
                         onPressed: () {
                           setState(() {
                             character = Character.sparky;
