@@ -70,7 +70,7 @@ class _MainMenuOverlayState extends State<MainMenuOverlay> {
                           });
                         },
                         child: Padding(
-                          padding: const EdgeInsets.all(24.0),
+                          padding: const EdgeInsets.all(20.0),
                           child: Column(
                             children: [
                               Image.asset(
@@ -81,7 +81,7 @@ class _MainMenuOverlayState extends State<MainMenuOverlay> {
                               const WhiteSpace(height: 18),
                               const Text(
                                 'Dash',
-                                style: TextStyle(fontSize: 24),
+                                style: TextStyle(fontSize: 20),
                               ),
                             ],
                           ),
@@ -100,7 +100,7 @@ class _MainMenuOverlayState extends State<MainMenuOverlay> {
                           });
                         },
                         child: Padding(
-                          padding: const EdgeInsets.all(24.0),
+                          padding: const EdgeInsets.all(20.0),
                           child: Column(
                             children: [
                               Image.asset(
@@ -111,7 +111,7 @@ class _MainMenuOverlayState extends State<MainMenuOverlay> {
                               const WhiteSpace(height: 18),
                               const Text(
                                 'Sparky',
-                                style: TextStyle(fontSize: 24),
+                                style: TextStyle(fontSize: 20),
                               ),
                             ],
                           ),
