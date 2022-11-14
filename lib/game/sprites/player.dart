@@ -130,9 +130,7 @@ class Player extends SpriteGroupComponent<PlayerState>
     // Only want Dash to  “jump” when she is falling + collides with the top of a platform
     if (isMovingDown && isCollidingVertically) {
       // remove power up once falls down on platform
-      if (other is EnemyPlatform && !isInvincible) {
-        gameRef.onLose();
-      } else if (other is NormalPlatform) {
+      if (other is NormalPlatform) {
         jump();
       } else if (other is SpringBoard) {
         jump(specialJumpSpeed: jumpSpeed * 2);
@@ -141,6 +139,10 @@ class Player extends SpriteGroupComponent<PlayerState>
         jump();
         other.breakPlatform();
       }
+    }
+
+    if (other is EnemyPlatform && !isInvincible) {
+      gameRef.onLose();
     }
 
     if (!hasPowerup) {
