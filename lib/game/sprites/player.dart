@@ -49,9 +49,9 @@ class Player extends SpriteGroupComponent<PlayerState>
 
     // infinite side boundaries if Dash's body is off the screen (position is from center)
     if (position.x < size.x / 2) {
-      position.x = gameRef.size.x + size.x + 10;
+      position.x = gameRef.size.x - (size.x / 2);
     }
-    if (position.x > gameRef.size.x + size.x + 10) {
+    if (position.x > gameRef.size.x - (size.x / 2)) {
       position.x = size.x / 2;
     }
 
