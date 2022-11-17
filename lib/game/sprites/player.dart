@@ -117,6 +117,10 @@ class Player extends SpriteGroupComponent<PlayerState>
   void onCollision(Set<Vector2> intersectionPoints, PositionComponent other) {
     super.onCollisionStart(intersectionPoints, other);
 
+    if (other is EnemyPlatform && !isInvincible) {
+      gameRef.onLose();
+    }
+
     // Check if Dash is moving down and collides with a platform from the top
     // this allows Dash to move up _through_ platforms without collision
     bool isMovingDown = _velocity.y > 0;
@@ -139,13 +143,7 @@ class Player extends SpriteGroupComponent<PlayerState>
         jump();
         other.breakPlatform();
       }
-    }
-
-    if (other is EnemyPlatform && !isInvincible) {
-      gameRef.onLose();
-    }
-
-    if (!hasPowerup) {
+    } else if (!hasPowerup) {
       if (other is Rocket) {
         current = PlayerState.rocket;
         jump(specialJumpSpeed: jumpSpeed * other.jumpSpeedMultiplier);
