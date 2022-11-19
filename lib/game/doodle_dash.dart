@@ -2,8 +2,8 @@ import 'package:flame/game.dart';
 import 'package:flame/input.dart';
 import 'package:flutter/material.dart';
 
-import './object_manager.dart';
 import './world.dart';
+import 'managers/managers.dart';
 import 'sprites/sprites.dart';
 import 'util/util.dart';
 
