@@ -7,7 +7,15 @@ import 'package:flutter/services.dart';
 import '../doodle_dash.dart';
 import 'sprites.dart';
 
-enum PlayerState { left, right, center, rocket, noogler_left, noogler_right }
+enum PlayerState {
+  left,
+  right,
+  center,
+  rocket,
+  nooglerCenter,
+  nooglerLeft,
+  nooglerRight
+}
 
 class Player extends SpriteGroupComponent<PlayerState>
     with HasGameRef<DoodleDash>, KeyboardHandler, CollisionCallbacks {
@@ -76,7 +84,7 @@ class Player extends SpriteGroupComponent<PlayerState>
         current = PlayerState.left;
       }
       if (isWearingHat) {
-        current = PlayerState.noogler_left;
+        current = PlayerState.nooglerLeft;
       }
       _hAxisInput += -1;
     }
@@ -86,7 +94,7 @@ class Player extends SpriteGroupComponent<PlayerState>
         current = PlayerState.right;
       }
       if (isWearingHat) {
-        current = PlayerState.noogler_right;
+        current = PlayerState.nooglerRight;
       }
       _hAxisInput += 1;
     }
@@ -103,22 +111,21 @@ class Player extends SpriteGroupComponent<PlayerState>
 
   bool get hasPowerup =>
       current == PlayerState.rocket ||
-      current == PlayerState.noogler_left ||
-      current == PlayerState.noogler_right;
+      current == PlayerState.nooglerLeft ||
+      current == PlayerState.nooglerRight;
 
   bool get isInvincible => current == PlayerState.rocket;
 
   bool get isWearingHat =>
-      current == PlayerState.noogler_left ||
-      current == PlayerState.noogler_right;
+      current == PlayerState.nooglerLeft || current == PlayerState.nooglerRight;
 
   // Callback for Dash colliding with another component in the game
   @override
   void onCollision(Set<Vector2> intersectionPoints, PositionComponent other) {
-    super.onCollisionStart(intersectionPoints, other);
-
+    super.onCollision(intersectionPoints, other);
     if (other is EnemyPlatform && !isInvincible) {
       gameRef.onLose();
+      return;
     }
 
     // Check if Dash is moving down and collides with a platform from the top
@@ -127,35 +134,47 @@ class Player extends SpriteGroupComponent<PlayerState>
     bool isCollidingVertically =
         (intersectionPoints.first.y - intersectionPoints.last.y).abs() < 5;
 
-    if (isMovingDown && hasPowerup) {
-      current = PlayerState.center;
+    bool enablePowerUp = false;
+
+    if (!hasPowerup && (other is Rocket || other is NooglerHat)) {
+      enablePowerUp = true;
     }
 
     // Only want Dash to  “jump” when she is falling + collides with the top of a platform
     if (isMovingDown && isCollidingVertically) {
-      // remove power up once falls down on platform
+      current = PlayerState.center;
       if (other is NormalPlatform) {
         jump();
+        return;
       } else if (other is SpringBoard) {
         jump(specialJumpSpeed: jumpSpeed * 2);
+        return;
       } else if (other is BrokenPlatform &&
           other.current == BrokenPlatformState.cracked) {
         jump();
         other.breakPlatform();
+        return;
       }
-    } else if (!hasPowerup) {
-      if (other is Rocket) {
-        current = PlayerState.rocket;
-        jump(specialJumpSpeed: jumpSpeed * other.jumpSpeedMultiplier);
-      } else if (other is NooglerHat) {
-        if (current == PlayerState.left) current = PlayerState.noogler_left;
-        if (current == PlayerState.right) current = PlayerState.noogler_right;
-        _removePowerupAfterTime(other.activeLengthInMS);
-        jump(specialJumpSpeed: jumpSpeed * other.jumpSpeedMultiplier);
+
+      if (other is Rocket || other is NooglerHat) {
+        enablePowerUp = true;
       }
     }
 
-    super.onCollision(intersectionPoints, other);
+    if (!enablePowerUp) return;
+
+    if (other is Rocket) {
+      current = PlayerState.rocket;
+      jump(specialJumpSpeed: jumpSpeed * other.jumpSpeedMultiplier);
+      return;
+    } else if (other is NooglerHat) {
+      if (current == PlayerState.center) current = PlayerState.nooglerCenter;
+      if (current == PlayerState.left) current = PlayerState.nooglerLeft;
+      if (current == PlayerState.right) current = PlayerState.nooglerRight;
+      _removePowerupAfterTime(other.activeLengthInMS);
+      jump(specialJumpSpeed: jumpSpeed * other.jumpSpeedMultiplier);
+      return;
+    }
   }
 
   void _removePowerupAfterTime(int ms) {
@@ -180,6 +199,8 @@ class Player extends SpriteGroupComponent<PlayerState>
     final center =
         await gameRef.loadSprite('game/${character.name}_center.png');
     final rocket = await gameRef.loadSprite('game/rocket_4.png');
+    final nooglerCenter =
+        await gameRef.loadSprite('game/${character.name}_hat_center.png');
     final nooglerLeft =
         await gameRef.loadSprite('game/${character.name}_hat_left.png');
     final nooglerRight =
@@ -190,8 +211,9 @@ class Player extends SpriteGroupComponent<PlayerState>
       PlayerState.right: right,
       PlayerState.center: center,
       PlayerState.rocket: rocket,
-      PlayerState.noogler_left: nooglerLeft,
-      PlayerState.noogler_right: nooglerRight,
+      PlayerState.nooglerCenter: nooglerCenter,
+      PlayerState.nooglerLeft: nooglerLeft,
+      PlayerState.nooglerRight: nooglerRight,
     };
   }
 }
