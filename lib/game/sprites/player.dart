@@ -80,21 +80,19 @@ class Player extends SpriteGroupComponent<PlayerState>
     _hAxisInput = 0;
 
     if (keysPressed.contains(LogicalKeyboardKey.arrowLeft)) {
-      if (!hasPowerup) {
-        current = PlayerState.left;
-      }
       if (isWearingHat) {
         current = PlayerState.nooglerLeft;
+      } else if (!hasPowerup) {
+        current = PlayerState.left;
       }
       _hAxisInput += -1;
     }
 
     if (keysPressed.contains(LogicalKeyboardKey.arrowRight)) {
-      if (!hasPowerup) {
-        current = PlayerState.right;
-      }
       if (isWearingHat) {
         current = PlayerState.nooglerRight;
+      } else if (!hasPowerup) {
+        current = PlayerState.right;
       }
       _hAxisInput += 1;
     }
@@ -112,12 +110,15 @@ class Player extends SpriteGroupComponent<PlayerState>
   bool get hasPowerup =>
       current == PlayerState.rocket ||
       current == PlayerState.nooglerLeft ||
-      current == PlayerState.nooglerRight;
+      current == PlayerState.nooglerRight ||
+      current == PlayerState.nooglerCenter;
 
   bool get isInvincible => current == PlayerState.rocket;
 
   bool get isWearingHat =>
-      current == PlayerState.nooglerLeft || current == PlayerState.nooglerRight;
+      current == PlayerState.nooglerLeft ||
+      current == PlayerState.nooglerRight ||
+      current == PlayerState.nooglerCenter;
 
   // Callback for Dash colliding with another component in the game
   @override
