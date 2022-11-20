@@ -16,7 +16,7 @@ class MainMenuOverlay extends StatefulWidget {
 }
 
 class _MainMenuOverlayState extends State<MainMenuOverlay> {
-  Character? character;
+  Character character = Character.dash;
 
   @override
   Widget build(BuildContext context) {
@@ -155,7 +155,8 @@ class _MainMenuOverlayState extends State<MainMenuOverlay> {
                       onPressed: (character != null)
                           ? () async {
                               (widget.game as DoodleDash)
-                                  .selectCharacter(character!);
+                                  .gameManager
+                                  .selectCharacter(character);
                               (widget.game as DoodleDash).startGame();
                             }
                           : null,

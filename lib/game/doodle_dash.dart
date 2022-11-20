@@ -7,8 +7,6 @@ import 'managers/managers.dart';
 import 'sprites/sprites.dart';
 import 'util/util.dart';
 
-enum GameState { intro, playing, gameOver }
-
 enum Character { dash, sparky }
 
 class DoodleDash extends FlameGame
@@ -19,18 +17,18 @@ class DoodleDash extends FlameGame
   final World _world = World();
   ObjectManager objectManager = ObjectManager();
   LevelManager levelManager = LevelManager();
+  GameManager gameManager = GameManager();
 
   int screenBufferSpace = 300;
-  GameState state = GameState.intro;
-  bool get isPlaying => state == GameState.playing;
-  bool get isGameOver => state == GameState.gameOver;
-  bool get isIntro => state == GameState.intro;
-  Character character = Character.dash;
-  ValueNotifier<int> score = ValueNotifier(0);
 
   @override
   Future<void> onLoad() async {
     await add(_world);
+
+    // add Game Manager
+    await add(gameManager);
+
+    setCharacter();
 
     // add the pause button and score keeper
     overlays.add('gameOverlay');
@@ -43,18 +41,18 @@ class DoodleDash extends FlameGame
   void update(double dt) {
     super.update(dt);
     // stop updating in between games
-    if (isGameOver) {
+    if (gameManager.isGameOver) {
       return;
     }
 
     // show the main menu when the game launches
     // And return so the engine doesn't  update as long as the menu is up.
-    if (isIntro) {
+    if (gameManager.isIntro) {
       overlays.add('mainMenuOverlay');
       return;
     }
 
-    if (isPlaying) {
+    if (gameManager.isPlaying) {
       checkLevelUp();
       // Camera should only follow Dash when she's moving up, if she's following down
       // the camera should stay where it is and NOT follow her down.
@@ -98,15 +96,15 @@ class DoodleDash extends FlameGame
   // This method sets (or resets) the camera, dash and platform manager.
   // It is called when you start a game. Resets game state
   void initializeGameStart() {
+    //reset score
+    gameManager.reset();
+
     // remove platform if necessary, because a new one is made each time a new
     // game is started.
     if (children.contains(objectManager)) objectManager.removeFromParent();
 
     levelManager.reset();
     player.reset();
-
-    //reset score
-    score.value = 0;
 
     // Setting the World Bounds for the camera will allow the camera to "move up"
     // but stay fixed horizontally, allowing Dash to go out of camera on one side,
@@ -136,16 +134,15 @@ class DoodleDash extends FlameGame
     objectManager.configure(levelManager.level, levelManager.difficulty);
   }
 
-  void selectCharacter(Character character) {
-    this.character = character;
-    player = Player(character: character);
+  void setCharacter() {
+    player = Player(character: gameManager.character);
     player.setJumpSpeed(levelManager.jumpSpeed);
     add(player);
   }
 
   void startGame() {
     initializeGameStart();
-    state = GameState.playing;
+    gameManager.state = GameState.playing;
     overlays.remove('mainMenuOverlay');
   }
 
@@ -155,7 +152,7 @@ class DoodleDash extends FlameGame
   }
 
   void onLose() {
-    state = GameState.gameOver;
+    gameManager.state = GameState.gameOver;
     overlays.add('gameOverOverlay');
   }
 
@@ -168,7 +165,7 @@ class DoodleDash extends FlameGame
   }
 
   void checkLevelUp() {
-    if (levelManager.shouldLevelUp(score.value)) {
+    if (levelManager.shouldLevelUp(gameManager.score.value)) {
       levelManager.increaseLevel();
       print('Leveled up! ${levelManager.level}');
 

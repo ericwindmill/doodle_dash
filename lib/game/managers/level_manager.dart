@@ -2,8 +2,6 @@ import 'package:flame/components.dart';
 
 import '../doodle_dash.dart';
 
-// start using level manager in doodle dash and use to check for next level.
-
 class LevelManager extends Component with HasGameRef<DoodleDash> {
   LevelManager({this.selectedLevel = 1, this.level = 1});
 

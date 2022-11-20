@@ -49,7 +49,7 @@ class Player extends SpriteGroupComponent<PlayerState>
 
   @override
   void update(double dt) {
-    if (gameRef.isIntro || gameRef.isGameOver) return;
+    if (gameRef.gameManager.isIntro || gameRef.gameManager.isGameOver) return;
 
     _velocity.x = _hAxisInput * jumpSpeed; // Dash's horizontal velocity
     _velocity.y +=

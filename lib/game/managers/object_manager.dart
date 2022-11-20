@@ -92,7 +92,7 @@ class ObjectManager extends Component with HasGameRef<DoodleDash> {
       // increase score whenever "Dash passes a platform"
       // Really, increase score when a platform passes off the screen
       // It's the simplest way to do it
-      gameRef.score.value++;
+      gameRef.gameManager.increaseScore();
 
       _maybeAddPowerup();
       _maybeAddEnemy();
