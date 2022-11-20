@@ -18,6 +18,7 @@ class DoodleDash extends FlameGame
   late Player player;
   final World _world = World();
   ObjectManager objectManager = ObjectManager();
+  LevelManager levelManager = LevelManager();
 
   int screenBufferSpace = 300;
   GameState state = GameState.intro;
@@ -26,7 +27,6 @@ class DoodleDash extends FlameGame
   bool get isIntro => state == GameState.intro;
   Character character = Character.dash;
   ValueNotifier<int> score = ValueNotifier(0);
-  int level = 1;
 
   @override
   Future<void> onLoad() async {
@@ -34,6 +34,9 @@ class DoodleDash extends FlameGame
 
     // add the pause button and score keeper
     overlays.add('gameOverlay');
+
+    // add level/difficulty manager
+    await add(levelManager);
   }
 
   @override
@@ -52,6 +55,7 @@ class DoodleDash extends FlameGame
     }
 
     if (isPlaying) {
+      checkLevelUp();
       // Camera should only follow Dash when she's moving up, if she's following down
       // the camera should stay where it is and NOT follow her down.
       if (player.isMovingDown) {
@@ -98,6 +102,7 @@ class DoodleDash extends FlameGame
     // game is started.
     if (children.contains(objectManager)) objectManager.removeFromParent();
 
+    levelManager.reset();
     player.reset();
 
     //reset score
@@ -123,30 +128,25 @@ class DoodleDash extends FlameGame
 
     // reset the the platforms
     objectManager = ObjectManager(
-        minVerticalDistanceToNextPlatform: levels[level]!.minDistance,
-        maxVerticalDistanceToNextPlatform: levels[level]!.maxDistance);
-
-    objectManager.increaseDifficulty(level);
+        minVerticalDistanceToNextPlatform: levelManager.minDistance,
+        maxVerticalDistanceToNextPlatform: levelManager.maxDistance);
 
     add(objectManager);
+
+    objectManager.configure(levelManager.level, levelManager.difficulty);
   }
 
   void selectCharacter(Character character) {
     this.character = character;
     player = Player(character: character);
-    player.setJumpSpeed(levels[level]!.jumpSpeed);
+    player.setJumpSpeed(levelManager.jumpSpeed);
     add(player);
-  }
-
-  void selectDifficulty(int level) {
-    this.level = level;
   }
 
   void startGame() {
     initializeGameStart();
     state = GameState.playing;
     overlays.remove('mainMenuOverlay');
-    player.setJumpSpeed(levels[level]!.jumpSpeed);
   }
 
   void resetGame() {
@@ -164,6 +164,19 @@ class DoodleDash extends FlameGame
       resumeEngine();
     } else {
       pauseEngine();
+    }
+  }
+
+  void checkLevelUp() {
+    if (levelManager.shouldLevelUp(score.value)) {
+      levelManager.increaseLevel();
+      print('Leveled up! ${levelManager.level}');
+
+      // Change config for how platforms are generated
+      objectManager.configure(levelManager.level, levelManager.difficulty);
+
+      // Change config for player jump speed
+      player.setJumpSpeed(levelManager.jumpSpeed);
     }
   }
 }

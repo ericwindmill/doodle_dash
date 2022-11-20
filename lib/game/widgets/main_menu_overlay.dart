@@ -127,15 +127,22 @@ class _MainMenuOverlayState extends State<MainMenuOverlay> {
                           style: Theme.of(context).textTheme.bodyLarge!),
                       Expanded(
                         child: Slider(
-                          value: (widget.game as DoodleDash).level.toDouble(),
+                          value: (widget.game as DoodleDash)
+                              .levelManager
+                              .selectedLevel
+                              .toDouble(),
                           max: 5,
                           min: 1,
                           divisions: 4,
-                          label: (widget.game as DoodleDash).level.toString(),
+                          label: (widget.game as DoodleDash)
+                              .levelManager
+                              .selectedLevel
+                              .toString(),
                           onChanged: ((value) {
                             setState(() {
                               (widget.game as DoodleDash)
-                                  .selectDifficulty(value.toInt());
+                                  .levelManager
+                                  .selectLevel(value.toInt());
                             });
                           }),
                         ),
