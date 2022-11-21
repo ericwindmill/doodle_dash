@@ -2,22 +2,21 @@ import 'dart:math';
 
 import 'package:flame/components.dart';
 
-import 'doodle_dash.dart';
-import 'sprites/sprites.dart';
-import 'util/util.dart';
+import '../doodle_dash.dart';
+import '../sprites/sprites.dart';
+import '../util/util.dart';
+import './managers.dart';
 
 final Random _rand = Random();
 
 class ObjectManager extends Component with HasGameRef<DoodleDash> {
   ObjectManager({
     this.minVerticalDistanceToNextPlatform = 200,
-    this.maxVerticalDistanceToNextPlatform = 400,
-    this.difficultyMultiplier = 1,
+    this.maxVerticalDistanceToNextPlatform = 300,
   });
 
   double minVerticalDistanceToNextPlatform;
   double maxVerticalDistanceToNextPlatform;
-  int difficultyMultiplier;
   final probGen = ProbabilityGenerator();
   final List<Platform> _platforms = [];
   final List<PowerUp> _powerups = [];
@@ -93,13 +92,7 @@ class ObjectManager extends Component with HasGameRef<DoodleDash> {
       // increase score whenever "Dash passes a platform"
       // Really, increase score when a platform passes off the screen
       // It's the simplest way to do it
-      gameRef.score.value++;
-
-      int? nextLevel = scoreToLevel[gameRef.score.value];
-
-      if (nextLevel != null) {
-        increaseDifficulty(nextLevel);
-      }
+      gameRef.gameManager.increaseScore();
 
       _maybeAddPowerup();
       _maybeAddEnemy();
@@ -138,23 +131,13 @@ class ObjectManager extends Component with HasGameRef<DoodleDash> {
     }
   }
 
-  // Exposes a way for the DoodleDash component to increase difficulty mid-game
-  void increaseDifficulty(int nextLevel) {
-    if (difficultyMultiplier < nextLevel) {
-      difficultyMultiplier = nextLevel;
-      minVerticalDistanceToNextPlatform = levels[nextLevel]!.minDistance;
-      maxVerticalDistanceToNextPlatform = levels[nextLevel]!.maxDistance;
+  // Exposes a way for the DoodleDash component to change difficulty mid-game
+  void configure(int nextLevel, Difficulty config) {
+    minVerticalDistanceToNextPlatform = gameRef.levelManager.minDistance;
+    maxVerticalDistanceToNextPlatform = gameRef.levelManager.maxDistance;
 
-      for (int i = 1; i <= nextLevel; i++) {
-        enableLevelSpecialty(i);
-      }
-
-      // TODO: This logic should move out of object manager and into doodle_dash
-      try {
-        gameRef.player.setJumpSpeed(levels[nextLevel]!.jumpSpeed);
-      } catch (error) {
-        print('oops not initialized!');
-      }
+    for (int i = 1; i <= nextLevel; i++) {
+      enableLevelSpecialty(i);
     }
   }
 
