@@ -39,42 +39,35 @@ class DoodleDash extends FlameGame
   @override
   void update(double dt) {
     super.update(dt);
+
     // stop updating in between games
     if (isGameOver) {
       return;
     }
 
     // show the main menu when the game launches
-    // And return so the engine doesn't  update as long as the menu is up.
+    // And return so the engine doesn't update as long as the menu is up.
     if (isIntro) {
       overlays.add('mainMenuOverlay');
       return;
     }
 
     if (isPlaying) {
-      // Camera should only follow Dash when she's moving up, if she's following down
-      // the camera should stay where it is and NOT follow her down.
-      if (player.isMovingDown) {
-        camera.worldBounds = Rect.fromLTRB(
-          0,
-          camera.position.y - screenBufferSpace,
-          camera.gameSize.x,
-          camera.position.y + _world.size.y,
-        );
-      }
+      final Rect worldBounds = Rect.fromLTRB(
+        0,
+        camera.position.y - screenBufferSpace,
+        camera.gameSize.x,
+        camera.position.y + _world.size.y,
+      );
+      camera.worldBounds = worldBounds;
 
+      // Camera should only follow Dash when she's moving up, if she's falling down
+      // the camera should stay where it is and NOT follow her down.
       var isInTopHalfOfScreen = player.position.y <= (_world.size.y / 2);
       if (!player.isMovingDown && isInTopHalfOfScreen) {
-        // Here, we really only care about the "T" porition of the LTRB.
-        // ensure that the world is always much taller than Dash will reach
-        camera.worldBounds = Rect.fromLTRB(
-          0,
-          camera.position.y - screenBufferSpace,
-          camera.gameSize.x,
-          camera.position.y + _world.size.y,
-        );
         camera.followComponent(player);
       }
+
       // if Dash falls off screen, game over!
       if (player.position.y >
           camera.position.y +
