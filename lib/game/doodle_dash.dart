@@ -5,7 +5,6 @@ import 'package:flutter/material.dart';
 import './world.dart';
 import 'managers/managers.dart';
 import 'sprites/sprites.dart';
-import 'util/util.dart';
 
 enum Character { dash, sparky }
 
@@ -27,8 +26,6 @@ class DoodleDash extends FlameGame
 
     // add Game Manager
     await add(gameManager);
-
-    setCharacter();
 
     // add the pause button and score keeper
     overlays.add('gameOverlay');
@@ -141,6 +138,7 @@ class DoodleDash extends FlameGame
   }
 
   void startGame() {
+    setCharacter();
     initializeGameStart();
     gameManager.state = GameState.playing;
     overlays.remove('mainMenuOverlay');
@@ -153,6 +151,7 @@ class DoodleDash extends FlameGame
 
   void onLose() {
     gameManager.state = GameState.gameOver;
+    player.removeFromParent();
     overlays.add('gameOverOverlay');
   }
 

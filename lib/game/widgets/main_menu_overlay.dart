@@ -20,6 +20,8 @@ class _MainMenuOverlayState extends State<MainMenuOverlay> {
 
   @override
   Widget build(BuildContext context) {
+    DoodleDash game = widget.game as DoodleDash;
+
     return LayoutBuilder(builder: (context, constraints) {
       final characterWidth = constraints.maxWidth / 5;
 
@@ -57,65 +59,25 @@ class _MainMenuOverlayState extends State<MainMenuOverlay> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
-                      OutlinedButton(
-                        style: (character == Character.dash)
-                            ? ButtonStyle(
-                                backgroundColor:
-                                    MaterialStateProperty.all<Color>(
-                                        const Color.fromARGB(31, 64, 195, 255)))
-                            : null,
-                        onPressed: () {
+                      CharacterButton(
+                        character: Character.dash,
+                        selected: character == Character.dash,
+                        onSelectChar: () {
                           setState(() {
                             character = Character.dash;
                           });
                         },
-                        child: Padding(
-                          padding: const EdgeInsets.all(20.0),
-                          child: Column(
-                            children: [
-                              Image.asset(
-                                'assets/images/game/dash_center.png',
-                                height: characterWidth,
-                                width: characterWidth,
-                              ),
-                              const WhiteSpace(height: 18),
-                              const Text(
-                                'Dash',
-                                style: TextStyle(fontSize: 20),
-                              ),
-                            ],
-                          ),
-                        ),
+                        characterWidth: characterWidth,
                       ),
-                      OutlinedButton(
-                        style: (character == Character.sparky)
-                            ? ButtonStyle(
-                                backgroundColor:
-                                    MaterialStateProperty.all<Color>(
-                                        const Color.fromARGB(31, 64, 195, 255)))
-                            : null,
-                        onPressed: () {
+                      CharacterButton(
+                        character: Character.sparky,
+                        selected: character == Character.sparky,
+                        onSelectChar: () {
                           setState(() {
                             character = Character.sparky;
                           });
                         },
-                        child: Padding(
-                          padding: const EdgeInsets.all(20.0),
-                          child: Column(
-                            children: [
-                              Image.asset(
-                                'assets/images/game/sparky_center.png',
-                                height: characterWidth,
-                                width: characterWidth,
-                              ),
-                              const WhiteSpace(height: 18),
-                              const Text(
-                                'Sparky',
-                                style: TextStyle(fontSize: 20),
-                              ),
-                            ],
-                          ),
-                        ),
+                        characterWidth: characterWidth,
                       ),
                     ],
                   ),
@@ -125,41 +87,24 @@ class _MainMenuOverlayState extends State<MainMenuOverlay> {
                     children: [
                       Text('Difficulty:',
                           style: Theme.of(context).textTheme.bodyLarge!),
-                      Expanded(
-                        child: Slider(
-                          value: (widget.game as DoodleDash)
-                              .levelManager
-                              .selectedLevel
-                              .toDouble(),
-                          max: 5,
-                          min: 1,
-                          divisions: 4,
-                          label: (widget.game as DoodleDash)
-                              .levelManager
-                              .selectedLevel
-                              .toString(),
-                          onChanged: ((value) {
-                            setState(() {
-                              (widget.game as DoodleDash)
-                                  .levelManager
-                                  .selectLevel(value.toInt());
-                            });
-                          }),
-                        ),
+                      LevelPicker(
+                        level: game.levelManager.selectedLevel.toDouble(),
+                        label: game.levelManager.selectedLevel.toString(),
+                        onChanged: ((value) {
+                          setState(() {
+                            game.levelManager.selectLevel(value.toInt());
+                          });
+                        }),
                       ),
                     ],
                   ),
                   if (!screenHeightIsSmall) const WhiteSpace(height: 50),
                   Center(
                     child: ElevatedButton(
-                      onPressed: (character != null)
-                          ? () async {
-                              (widget.game as DoodleDash)
-                                  .gameManager
-                                  .selectCharacter(character);
-                              (widget.game as DoodleDash).startGame();
-                            }
-                          : null,
+                      onPressed: () async {
+                        game.gameManager.selectCharacter(character);
+                        game.startGame();
+                      },
                       style: ButtonStyle(
                         minimumSize: MaterialStateProperty.all(
                           const Size(100, 50),
@@ -177,6 +122,75 @@ class _MainMenuOverlayState extends State<MainMenuOverlay> {
         ),
       );
     });
+  }
+}
+
+class LevelPicker extends StatelessWidget {
+  const LevelPicker({
+    super.key,
+    required this.level,
+    required this.label,
+    required this.onChanged,
+  });
+
+  final double level;
+  final String label;
+  final Function(double) onChanged;
+
+  @override
+  Widget build(BuildContext context) {
+    return Expanded(
+        child: Slider(
+      value: level,
+      max: 5,
+      min: 1,
+      divisions: 4,
+      label: label,
+      onChanged: onChanged,
+    ));
+  }
+}
+
+class CharacterButton extends StatelessWidget {
+  const CharacterButton(
+      {super.key,
+      required this.character,
+      this.selected = false,
+      required this.onSelectChar,
+      required this.characterWidth});
+
+  final Character character;
+  final bool selected;
+  final Function() onSelectChar;
+  final double characterWidth;
+
+  @override
+  Widget build(BuildContext context) {
+    return OutlinedButton(
+      style: (selected)
+          ? ButtonStyle(
+              backgroundColor: MaterialStateProperty.all<Color>(
+                  const Color.fromARGB(31, 64, 195, 255)))
+          : null,
+      onPressed: onSelectChar,
+      child: Padding(
+        padding: const EdgeInsets.all(20.0),
+        child: Column(
+          children: [
+            Image.asset(
+              'assets/images/game/${character.name}_center.png',
+              height: characterWidth,
+              width: characterWidth,
+            ),
+            const WhiteSpace(height: 18),
+            Text(
+              character.name,
+              style: const TextStyle(fontSize: 20),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 }
 
