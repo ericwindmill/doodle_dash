@@ -121,6 +121,8 @@ class DoodleDash extends FlameGame
 
     // move dash back to the start
     player.position = Vector2(
+      // The total world size divided by 2 is the center, but the player size
+      // needs to be accounted for
       (_world.size.x - player.size.x) / 2,
       (_world.size.y - player.size.y) / 2,
     );
@@ -170,7 +172,6 @@ class DoodleDash extends FlameGame
   void checkLevelUp() {
     if (levelManager.shouldLevelUp(gameManager.score.value)) {
       levelManager.increaseLevel();
-      print('Leveled up! ${levelManager.level}');
 
       // Change config for how platforms are generated
       objectManager.configure(levelManager.level, levelManager.difficulty);

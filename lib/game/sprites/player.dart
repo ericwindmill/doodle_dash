@@ -29,7 +29,14 @@ class Player extends SpriteGroupComponent<PlayerState>
   Vector2 _velocity = Vector2.zero();
 
   // used to calculate if the user is moving Dash left (-1) or right (1)
+  // When moving left, the x-axis velocity is multiplied by -1, resulting in a negative number
+  // The numbers on the x-axis increase from left to right, so a negative number moves toward the left.
+  // When moving right, the result will be a positive number
+  // If the number is 0, Dash is moving vertically
   int _hAxisInput = 0;
+  final int movingLeftInput = -1;
+  final int movingRightInput = 1;
+
   Character character;
 
   // used to calculate the horizontal movement speed
@@ -47,20 +54,24 @@ class Player extends SpriteGroupComponent<PlayerState>
     current = PlayerState.center;
   }
 
+
+
   @override
   void update(double dt) {
     if (gameRef.gameManager.isIntro || gameRef.gameManager.isGameOver) return;
 
+    final double dashHorizontalCenter = size.x / 2;
+
     _velocity.x = _hAxisInput * jumpSpeed; // Dash's horizontal velocity
     _velocity.y +=
-        _gravity; // Gravity is always acting on Dash's vertical veloctiy
+        _gravity; // Gravity is always acting on Dash's vertical velocity
 
     // infinite side boundaries if Dash's body is off the screen (position is from center)
-    if (position.x < size.x / 2) {
-      position.x = gameRef.size.x - (size.x / 2);
+    if (position.x < dashHorizontalCenter) {
+      position.x = gameRef.size.x - (dashHorizontalCenter);
     }
-    if (position.x > gameRef.size.x - (size.x / 2)) {
-      position.x = size.x / 2;
+    if (position.x > gameRef.size.x - (dashHorizontalCenter)) {
+      position.x = dashHorizontalCenter;
     }
 
     // Calculate Dash's current position based on her velocity over elapsed time
@@ -86,21 +97,22 @@ class Player extends SpriteGroupComponent<PlayerState>
       } else if (!hasPowerup) {
         current = PlayerState.left;
       }
-      _hAxisInput += -1;
-    } // Player going right
+      _hAxisInput += movingLeftInput;
+    }
 
+    // Player going right
     if (keysPressed.contains(LogicalKeyboardKey.arrowRight)) {
       if (isWearingHat) {
         current = PlayerState.nooglerRight;
       } else if (!hasPowerup) {
         current = PlayerState.right;
       }
-      _hAxisInput += 1;
+      _hAxisInput += movingRightInput;
     }
 
-    // should be taken out after development, because its cheating
+    // During development, its useful to "cheat"
     if (keysPressed.contains(LogicalKeyboardKey.arrowUp)) {
-      jump();
+      // jump();
     }
 
     return true;
@@ -132,7 +144,6 @@ class Player extends SpriteGroupComponent<PlayerState>
 
     // Check if Dash is moving down and collides with a platform from the top
     // this allows Dash to move up _through_ platforms without collision
-    bool isMovingDown = _velocity.y > 0;
     bool isCollidingVertically =
         (intersectionPoints.first.y - intersectionPoints.last.y).abs() < 5;
 
