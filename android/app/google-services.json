@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "602684976603",
+    "project_id": "playdoodledash",
+    "storage_bucket": "playdoodledash.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:602684976603:android:a685fcd8e793e9cf404bfe",
+        "android_client_info": {
+          "package_name": "com.example.doodle_dash"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "602684976603-vk084re7d36f46nsue7dvub3305lpr3l.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCfsFL2umm5fLxrIGydZ-Kikkgs6SagQ5g"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "602684976603-vk084re7d36f46nsue7dvub3305lpr3l.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

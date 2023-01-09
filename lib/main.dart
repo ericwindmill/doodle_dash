@@ -10,6 +10,7 @@ import 'game_ep_one/episode_one_homepage.dart';
 import 'game_ep_two/game/episode_two_homepage.dart';
 
 void main() {
+  WidgetsFlutterBinding.ensureInitialized();
   runApp(const MyApp());
 }
 
