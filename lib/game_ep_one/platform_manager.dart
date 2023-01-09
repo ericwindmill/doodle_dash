@@ -5,7 +5,7 @@ import 'package:flame/components.dart';
 import 'doodle_dash.dart';
 import 'sprites/platform.dart';
 
-class PlatformManager extends Component with HasGameRef<DoodleDash> {
+class PlatformManager extends Component with HasGameRef<DoodleDashEp1> {
   final Random random = Random();
   final List<Platform> platforms = [];
   // TODO (sprint 2): This will be dependent on player jump speed and screen width

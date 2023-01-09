@@ -10,7 +10,7 @@ import 'platform.dart';
 enum DashDirection { left, right }
 
 class Player extends SpriteGroupComponent<DashDirection>
-    with HasGameRef<DoodleDashEp1>, KeyboardHandler, CollisionCallbacks {
+    with HasGameRef<DoodleDashEp2>, KeyboardHandler, CollisionCallbacks {
   Player({super.position})
       : super(
           size: Vector2.all(100),
@@ -18,7 +18,7 @@ class Player extends SpriteGroupComponent<DashDirection>
           priority: 1,
         );
 
-  final Vector2 _velocity = Vector2.zero();
+  Vector2 _velocity = Vector2.zero();
 
   // used to calculate if the user is moving Dash left (-1) or right (1)
   int _hAxisInput = 0;
@@ -26,7 +26,7 @@ class Player extends SpriteGroupComponent<DashDirection>
   // used to calculate the horizontal movement speed
   final double _moveSpeed = 400; // horizontal travel speed
   final double _gravity = 7; // acceleration pulling Dash down
-  final double _jumpSpeed = 600; // vertical travel speed
+  double _jumpSpeed = 600; // vertical travel speed
 
   @override
   Future<void> onLoad() async {
@@ -68,6 +68,10 @@ class Player extends SpriteGroupComponent<DashDirection>
     super.update(dt);
   }
 
+  void reset() {
+    _velocity = Vector2.zero();
+  }
+
   // When arrow keys are pressed, change Dash's travel direction + sprite
   @override
   bool onKeyEvent(RawKeyEvent event, Set<LogicalKeyboardKey> keysPressed) {
@@ -95,7 +99,9 @@ class Player extends SpriteGroupComponent<DashDirection>
 
   // Callback for Dash colliding with another component in the game
   @override
-  void onCollision(Set<Vector2> intersectionPoints, PositionComponent other) {
+  void onCollisionStart(
+      Set<Vector2> intersectionPoints, PositionComponent other) {
+    super.onCollisionStart(intersectionPoints, other);
     if (other is Platform) {
       // Check if Dash is moving down and collides with a platform from the top
       // this allows Dash to move up _through_ platforms without collision
@@ -109,17 +115,23 @@ class Player extends SpriteGroupComponent<DashDirection>
       }
 
       // TODO (sprint 3): Add collision behavior for power-ups
+    } else if (other is SpringBoard) {
+      jump(specialJumpSpeed: _jumpSpeed * 2);
     }
 
     super.onCollision(intersectionPoints, other);
   }
 
-  void jump() {
+  void jump({double? specialJumpSpeed}) {
     // Top left is 0,0 so going "up" is negative
-    _velocity.y = -_jumpSpeed;
+    _velocity.y = specialJumpSpeed != null ? -specialJumpSpeed : -_jumpSpeed;
   }
 
   void megaJump() {
     _velocity.y = -_jumpSpeed * 1.5;
+  }
+
+  void setJumpSpeed(double jumpSpeed) {
+    _jumpSpeed = jumpSpeed;
   }
 }

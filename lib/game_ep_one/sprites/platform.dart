@@ -5,7 +5,7 @@ import 'package:flame/components.dart';
 import '../doodle_dash.dart';
 
 class Platform extends SpriteComponent
-    with HasGameRef<DoodleDash>, CollisionCallbacks {
+    with HasGameRef<DoodleDashEp1>, CollisionCallbacks {
   final hitbox = RectangleHitbox();
 
   Platform({

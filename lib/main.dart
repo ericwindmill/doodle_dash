@@ -1,10 +1,12 @@
 import 'package:flame/game.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 import 'game/doodle_dash.dart';
 import 'game/util/util.dart';
 import 'game/widgets/widgets.dart';
+import 'game_ep_one/episode_one_homepage.dart';
 
 void main() {
   runApp(const MyApp());
@@ -14,7 +16,7 @@ class MyApp extends StatelessWidget {
   const MyApp({super.key});
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    return MaterialApp.router(
       title: 'Doodle Dash',
       themeMode: ThemeMode.dark,
       theme: ThemeData(
@@ -27,12 +29,27 @@ class MyApp extends StatelessWidget {
         textTheme: GoogleFonts.audiowideTextTheme(ThemeData.dark().textTheme),
         useMaterial3: true,
       ),
-      home: const MyHomePage(title: 'Doodle Dash'),
+      routerConfig: GoRouter(
+        routes: [
+          GoRoute(
+            path: '/',
+            builder: (context, state) {
+              return const MyHomePage(title: 'DoodleDash');
+            },
+          ),
+          GoRoute(
+            path: '/episode_1',
+            builder: (context, state) {
+              return const MyHomePageEpisodeOne(title: 'DoodleDash');
+            },
+          ),
+        ],
+      ),
     );
   }
 }
 
-final Game game = DoodleDash();
+Game game = DoodleDash();
 
 class MyHomePage extends StatefulWidget {
   const MyHomePage({super.key, required this.title});

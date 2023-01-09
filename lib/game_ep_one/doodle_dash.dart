@@ -6,9 +6,9 @@ import './world.dart';
 import 'platform_manager.dart';
 import 'sprites/sprites.dart';
 
-class DoodleDash extends FlameGame
+class DoodleDashEp1 extends FlameGame
     with HasKeyboardHandlerComponents, HasCollisionDetection {
-  DoodleDash({super.children});
+  DoodleDashEp1({super.children});
 
   final World _world = World();
   final PlatformManager platformManager = PlatformManager(
