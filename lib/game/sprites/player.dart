@@ -54,8 +54,6 @@ class Player extends SpriteGroupComponent<PlayerState>
     current = PlayerState.center;
   }
 
-
-
   @override
   void update(double dt) {
     if (gameRef.gameManager.isIntro || gameRef.gameManager.isGameOver) return;
@@ -88,6 +86,10 @@ class Player extends SpriteGroupComponent<PlayerState>
   // When arrow keys are pressed, change Dash's travel direction + sprite
   @override
   bool onKeyEvent(RawKeyEvent event, Set<LogicalKeyboardKey> keysPressed) {
+    if (keysPressed.contains(LogicalKeyboardKey.space)) {
+      gameRef.togglePauseState();
+    }
+
     _hAxisInput = 0; // by default not going left or right
 
     // Player going left
@@ -112,7 +114,7 @@ class Player extends SpriteGroupComponent<PlayerState>
 
     // During development, its useful to "cheat"
     if (keysPressed.contains(LogicalKeyboardKey.arrowUp)) {
-      // jump();
+      jump();
     }
 
     return true;
