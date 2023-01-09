@@ -18,7 +18,7 @@ class Platform extends SpriteComponent
   @override
   Future<void>? onLoad() async {
     await super.onLoad();
-    sprite = await gameRef.loadSprite('game/yellow_platform.png');
+    sprite = await gameRef.loadSprite('ep_1/images/game/yellow_platform.png');
 
     // Add collision detection logic
     await add(hitbox);

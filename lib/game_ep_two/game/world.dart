@@ -7,7 +7,7 @@ class World extends ParallaxComponent<DoodleDashEp2> {
   @override
   Future<void> onLoad() async {
     parallax = await gameRef.loadParallax(
-      [ParallaxImageData('game/graph_paper.png')],
+      [ParallaxImageData('ep_2/images/game/graph_paper.png')],
     );
   }
 }

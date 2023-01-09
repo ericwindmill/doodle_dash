@@ -7,6 +7,7 @@ import 'game/doodle_dash.dart';
 import 'game/util/util.dart';
 import 'game/widgets/widgets.dart';
 import 'game_ep_one/episode_one_homepage.dart';
+import 'game_ep_two/game/episode_two_homepage.dart';
 
 void main() {
   runApp(const MyApp());
@@ -41,6 +42,12 @@ class MyApp extends StatelessWidget {
             path: '/episode_1',
             builder: (context, state) {
               return const MyHomePageEpisodeOne(title: 'DoodleDash');
+            },
+          ),
+          GoRoute(
+            path: '/episode_2',
+            builder: (context, state) {
+              return const MyHomePageEpisodeTwo(title: 'DoodleDash');
             },
           ),
         ],

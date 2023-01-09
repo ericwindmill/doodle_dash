@@ -18,7 +18,7 @@ class Platform extends SpriteComponent
   @override
   Future<void>? onLoad() async {
     await super.onLoad();
-    sprite = await gameRef.loadSprite('game/yellow_platform.png');
+    sprite = await gameRef.loadSprite('ep_2/images/game/yellow_platform.png');
 
     // Add collision detection logic
     await add(hitbox);
@@ -32,7 +32,7 @@ class GrassPlatform extends Platform {
   @override
   Future<void>? onLoad() async {
     await super.onLoad();
-    sprite = await gameRef.loadSprite('game/grass_platform.png');
+    sprite = await gameRef.loadSprite('ep_2/images/game/grass_platform.png');
   }
 }
 
@@ -42,7 +42,7 @@ class SandPlatform extends Platform {
   @override
   Future<void>? onLoad() async {
     await super.onLoad();
-    sprite = await gameRef.loadSprite('game/sand_platform.png');
+    sprite = await gameRef.loadSprite('ep_2/images/game/sand_platform.png');
   }
 }
 
@@ -52,7 +52,7 @@ class StonePlatform extends Platform {
   @override
   Future<void>? onLoad() async {
     await super.onLoad();
-    sprite = await gameRef.loadSprite('game/stone_platform.png');
+    sprite = await gameRef.loadSprite('ep_2/images/game/stone_platform.png');
   }
 }
 
@@ -75,8 +75,10 @@ class SpringBoard extends SpriteGroupComponent<SpringState>
     await super.onLoad();
 
     // Load & configure sprite assets
-    final springDown = await gameRef.loadSprite('game/springboardDown.png');
-    final springUp = await gameRef.loadSprite('game/springboardUp.png');
+    final springDown =
+        await gameRef.loadSprite('ep_2/images/game/springboardDown.png');
+    final springUp =
+        await gameRef.loadSprite('ep_2/images/game/springboardUp.png');
 
     sprites = <SpringState, Sprite>{
       SpringState.down: springDown,

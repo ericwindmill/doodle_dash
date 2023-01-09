@@ -36,8 +36,9 @@ class Player extends SpriteGroupComponent<DashDirection>
     await add(CircleHitbox());
 
     // Load & configure sprite assets
-    final leftDash = await gameRef.loadSprite('game/left_dash.png');
-    final rightDash = await gameRef.loadSprite('game/right_dash.png');
+    final leftDash = await gameRef.loadSprite('ep_1/images/game/left_dash.png');
+    final rightDash =
+        await gameRef.loadSprite('ep_1/images/game/right_dash.png');
 
     sprites = <DashDirection, Sprite>{
       DashDirection.left: leftDash,
