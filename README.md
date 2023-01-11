@@ -1,3 +1,5 @@
+Prototyping game assets from the [Platformer Art Deluxe Bundle](https://opengameart.org/content/platformer-art-deluxe) via Kenney.nl
+
 # doodle_dash
 
 A new Flutter project.
