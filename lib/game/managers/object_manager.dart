@@ -2,10 +2,10 @@ import 'dart:math';
 
 import 'package:flame/components.dart';
 
+import './managers.dart';
 import '../doodle_dash.dart';
 import '../sprites/sprites.dart';
 import '../util/util.dart';
-import './managers.dart';
 
 final Random _rand = Random();
 
@@ -18,7 +18,7 @@ class ObjectManager extends Component with HasGameRef<DoodleDash> {
   double minVerticalDistanceToNextPlatform;
   double maxVerticalDistanceToNextPlatform;
   final probGen = ProbabilityGenerator();
-  final List<Platform> _platforms = [];
+  final List<Platform<dynamic>> _platforms = [];
   final List<PowerUp> _powerups = [];
   final List<EnemyPlatform> _enemies = [];
   final double _tallestPlatformHeight = 50;
@@ -185,7 +185,7 @@ class ObjectManager extends Component with HasGameRef<DoodleDash> {
 
   // Return a platform.
   // The percent chance of any given platform is NOT equal
-  Platform _semiRandomPlatform(Vector2 position) {
+  Platform<dynamic> _semiRandomPlatform(Vector2 position) {
     if (specialPlatforms['spring'] == true &&
         probGen.generateWithProbability(15)) {
       // 15% chance of getting springboard
