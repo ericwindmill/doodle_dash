@@ -46,6 +46,7 @@ class GameOverOverlay extends StatelessWidget {
                 ),
                 child: const Text('Play Again'),
               ),
+              AudioControl(game),
             ],
           ),
         ),
