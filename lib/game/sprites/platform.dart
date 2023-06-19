@@ -97,6 +97,9 @@ class NormalPlatform extends Platform<NormalPlatformState> {
     size = spriteOptions[randSprite]!;
     await super.onLoad();
   }
+
+  @override
+  onCollision(Set<Vector2> intersectionPoints, PositionComponent other) {}
 }
 
 enum BrokenPlatformState { cracked, broken }

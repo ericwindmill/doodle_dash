@@ -2,6 +2,7 @@ import 'package:flame/game.dart';
 import 'package:flutter/material.dart';
 
 import '../doodle_dash.dart';
+import 'audio_overlay.dart';
 
 // Overlay that appears for the main menu
 
@@ -16,6 +17,7 @@ class MainMenuOverlay extends StatefulWidget {
 
 class _MainMenuOverlayState extends State<MainMenuOverlay> {
   Character character = Character.dash;
+  bool audioOn = false;
 
   @override
   Widget build(BuildContext context) {
@@ -114,6 +116,7 @@ class _MainMenuOverlayState extends State<MainMenuOverlay> {
                       child: const Text('Start'),
                     ),
                   ),
+                  AudioControl(game)
                 ],
               ),
             ),

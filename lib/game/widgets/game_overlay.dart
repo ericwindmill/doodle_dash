@@ -64,6 +64,7 @@ class GameOverlayState extends State<GameOverlay> {
                 color: Colors.black12,
               ),
             ),
+          AudioControl(widget.game as DoodleDash),
         ],
       ),
     );

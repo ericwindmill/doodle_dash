@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flame/collisions.dart';
 import 'package:flame/components.dart';
+import 'package:flame_audio/flame_audio.dart';
 import 'package:flutter/services.dart';
 
 import '../doodle_dash.dart';
@@ -53,8 +54,6 @@ class Player extends SpriteGroupComponent<PlayerState>
     await _loadCharacterSprites();
     current = PlayerState.center;
   }
-
-
 
   @override
   void update(double dt) {
@@ -138,6 +137,7 @@ class Player extends SpriteGroupComponent<PlayerState>
   void onCollision(Set<Vector2> intersectionPoints, PositionComponent other) {
     super.onCollision(intersectionPoints, other);
     if (other is EnemyPlatform && !isInvincible) {
+      if (game.audioOn) FlameAudio.play('enemy.mp3');
       gameRef.onLose();
       return;
     }
@@ -157,14 +157,17 @@ class Player extends SpriteGroupComponent<PlayerState>
     if (isMovingDown && isCollidingVertically) {
       current = PlayerState.center;
       if (other is NormalPlatform) {
+        if (game.audioOn) FlameAudio.play('normal_platform.mp3');
         jump();
         return;
       } else if (other is SpringBoard) {
+        if (game.audioOn) FlameAudio.play('trampoline.mp3');
         jump(specialJumpSpeed: jumpSpeed * 2);
         return;
       } else if (other is BrokenPlatform &&
           other.current == BrokenPlatformState.cracked) {
         jump();
+        if (game.audioOn) FlameAudio.play('broken_platform.mp3');
         other.breakPlatform();
         return;
       }
@@ -178,6 +181,8 @@ class Player extends SpriteGroupComponent<PlayerState>
 
     if (other is Rocket) {
       current = PlayerState.rocket;
+
+      if (game.audioOn) FlameAudio.play('rocket.mp3');
       jump(specialJumpSpeed: jumpSpeed * other.jumpSpeedMultiplier);
       return;
     } else if (other is NooglerHat) {
@@ -185,6 +190,7 @@ class Player extends SpriteGroupComponent<PlayerState>
       if (current == PlayerState.left) current = PlayerState.nooglerLeft;
       if (current == PlayerState.right) current = PlayerState.nooglerRight;
       _removePowerupAfterTime(other.activeLengthInMS);
+      if (game.audioOn) FlameAudio.play('noogler_hat.mp3');
       jump(specialJumpSpeed: jumpSpeed * other.jumpSpeedMultiplier);
       return;
     }

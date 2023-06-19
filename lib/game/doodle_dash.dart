@@ -1,5 +1,6 @@
 import 'package:flame/game.dart';
 import 'package:flame/input.dart';
+import 'package:flame_audio/flame_audio.dart';
 import 'package:flutter/material.dart';
 
 import './world.dart';
@@ -14,6 +15,7 @@ class DoodleDash extends FlameGame
 
   late Player player;
   final World _world = World();
+  bool audioOn = false;
   ObjectManager objectManager = ObjectManager();
   LevelManager levelManager = LevelManager();
   GameManager gameManager = GameManager();
@@ -22,6 +24,8 @@ class DoodleDash extends FlameGame
 
   @override
   Future<void> onLoad() async {
+    await FlameAudio.audioCache.loadAll(['underscore.mp3']);
+
     await add(_world);
 
     // add Game Manager
@@ -94,6 +98,22 @@ class DoodleDash extends FlameGame
     return const Color.fromARGB(255, 241, 247, 249);
   }
 
+  void toggleMusic() {
+    audioOn = !audioOn;
+
+    switch (audioOn) {
+      case true:
+        playBgmMusic();
+      case false:
+        FlameAudio.bgm.stop();
+    }
+  }
+
+  void playBgmMusic() {
+    FlameAudio.bgm.initialize();
+    FlameAudio.bgm.play('underscore.mp3');
+  }
+
   // This method sets (or resets) the camera, dash and platform manager.
   // It is called when you start a game. Resets game state
   void initializeGameStart() {
@@ -144,6 +164,7 @@ class DoodleDash extends FlameGame
   }
 
   void startGame() {
+    if (audioOn) FlameAudio.play('start_game.mp3');
     setCharacter();
     initializeGameStart();
     gameManager.state = GameState.playing;
@@ -156,6 +177,7 @@ class DoodleDash extends FlameGame
   }
 
   void onLose() {
+    if (audioOn) FlameAudio.play('game_over.mp3');
     gameManager.state = GameState.gameOver;
     player.removeFromParent();
     overlays.add('gameOverOverlay');
