@@ -48,12 +48,7 @@ class _MyHomePageState extends State<MyHomePage> {
       body: Center(
         child: LayoutBuilder(builder: (context, constraints) {
           return Container(
-            constraints: const BoxConstraints(
-              // 1000 is arbitrary, should be tweaked (todo eric)
-              // 550 is the smallest Chrome will allow you to make the window
-              maxWidth: 800,
-              minWidth: 550,
-            ),
+            constraints: const BoxConstraints(),
             child: GameWidget(
               // hot reload in development mode,
               game: game,

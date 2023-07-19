@@ -26,8 +26,8 @@ class _AudioControlState extends State<AudioControl> {
         child: IconButton(
           onPressed: () {
             setState(() {
-              game.toggleMusic();
-              audioOn = game.audioOn;
+              game.audio.toggleSound();
+              audioOn = game.audio.audioOn;
             });
           },
           icon: audioOn

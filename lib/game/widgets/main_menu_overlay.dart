@@ -17,7 +17,6 @@ class MainMenuOverlay extends StatefulWidget {
 
 class _MainMenuOverlayState extends State<MainMenuOverlay> {
   Character character = Character.dash;
-  bool audioOn = false;
 
   @override
   Widget build(BuildContext context) {
